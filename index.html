@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT INFAQMU - Transparansi Infaq & Sedekah Cloud</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js untuk Visualisasi Statistik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Supabase JS v2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Animasi Shake saat PIN salah */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.35s ease-in-out;
+        }
+
+        /* Animasi Pop saat tombol Aamiin / Like diklik */
+        @keyframes heartPop {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.35); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        .animate-pop {
+            animation: heartPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Sembunyikan scrollbar horizontal pada Story Highlights & Filter Pills */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Ring gradasi ala Instagram Stories */
+        .story-ring-emerald {
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #f59e0b 100%);
+        }
+        .story-ring-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #10b981 100%);
+        }
+
+        /* Pengaturan khusus cetak laporan (Print / Papan Pengumuman) */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-expand {
+                max-width: 100% !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .feed-card {
+                break-inside: avoid;
+                border: 1px solid #e2e8f0 !important;
+                box-shadow: none !important;
+                margin-bottom: 12px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100/90 text-slate-900 antialiased min-h-screen flex flex-col selection:bg-emerald-200 selection:text-emerald-950">
+
+    <!-- ===================================================================== -->
+    <!-- TOAST NOTIFIKASI MENGAMBANG                                           -->
+    <!-- ===================================================================== -->
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none w-full max-w-md px-4"></div>
+
+    <!-- ===================================================================== -->
+    <!-- 1. GERBANG AKSES PIN 6 DIGIT (TERHUBUNG KE SUPABASE CLOUD)            -->
+    <!-- ===================================================================== -->
+    <div id="access-gate" class="fixed inset-0 z-40 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 flex items-center justify-center p-4 overflow-y-auto">
+        <!-- Dekorasi cahaya latar belakang -->
+        <div class="fixed top-[-10%] left-[-10%] w-80 h-80 rounded-full bg-emerald-500/20 blur-3xl pointer-events-none"></div>
+        <div class="fixed bottom-[-10%] right-[-10%] w-80 h-80 rounded-full bg-amber-500/15 blur-3xl pointer-events-none"></div>
+
+        <div class="relative bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white/40 max-w-[420px] w-full p-6 sm:p-8 my-auto">
+            <!-- Status Sinkronisasi Awal di Gate -->
+            <div class="flex justify-center mb-3">
+                <span id="gate-sync-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>Menyiapkan sistem...</span>
+                </span>
+            </div>
+
+            <!-- Logo & Brand Header -->
+            <div class="flex flex-col items-center text-center mb-5">
+                <div class="w-16 h-16 rounded-2xl story-ring-emerald p-[3px] shadow-lg shadow-emerald-900/20 mb-3">
+                    <div class="w-full h-full bg-slate-950 rounded-[13px] flex items-center justify-center text-emerald-400">
+                        <i data-lucide="hand-heart" class="w-8 h-8"></i>
+                    </div>
+                </div>
+                <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-bold tracking-wider uppercase mb-1">
+                    <span>PROJECT INFAQMU</span>
+                    <i data-lucide="badge-check" class="w-3.5 h-3.5 text-emerald-600 fill-emerald-100"></i>
+                </div>
+                <h1 id="gate-org-name" class="font-display text-xl font-extrabold text-slate-900 leading-tight">
+                    INFAQMU
+                </h1>
+                <p id="gate-org-handle" class="text-xs text-slate-500 mt-0.5 font-medium">
+                    @infaqmu.peduli • Laporan Dana Umat
+                </p>
+            </div>
+
+            <!-- Tab Pemilih Role -->
+            <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-2xl mb-5 border border-slate-200/60">
+                <button type="button" id="tab-role-viewer" onclick="switchGateRole('viewer')" 
+                    class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-emerald-800 shadow-sm">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>Jamaah / Pengunjung</span>
+                </button>
+                <button type="button" id="tab-role-admin" onclick="switchGateRole('admin')" 
+                    class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-500 hover:text-slate-900">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    <span>Panitia / Admin</span>
+                </button>
+            </div>
+
+            <!-- Form Input 6 Kotak Digit PIN + Keypad Angka Interaktif -->
+            <form id="pin-form" onsubmit="handlePinSubmit(event)" class="space-y-4">
+                <div>
+                    <label id="pin-prompt-label" class="block text-center text-xs font-semibold text-slate-600 mb-2.5">
+                        Masukkan Kode PIN 6 Digit dari Admin
+                    </label>
+                    
+                    <div id="pin-inputs-container" class="flex justify-center gap-2">
+                        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-11 h-12 sm:w-12 sm:h-13 text-center text-xl font-display font-bold rounded-2xl border-2 border-slate-200 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/15 outline-none transition-all" required>
+                        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-11 h-12 sm:w-12 sm:h-13 text-center text-xl font-display font-bold rounded-2xl border-2 border-slate-200 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/15 outline-none transition-all" required>
+                        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-11 h-12 sm:w-12 sm:h-13 text-center text-xl font-display font-bold rounded-2xl border-2 border-slate-200 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/15 outline-none transition-all" required>
+                        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-11 h-12 sm:w-12 sm:h-13 text-center text-xl font-display font-bold rounded-2xl border-2 border-slate-200 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/15 outline-none transition-all" required>
+                        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-11 h-12 sm:w-12 sm:h-13 text-center text-xl font-display font-bold rounded-2xl border-2 border-slate-200 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/15 outline-none transition-all" required>
+                        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-11 h-12 sm:w-12 sm:h-13 text-center text-xl font-display font-bold rounded-2xl border-2 border-slate-200 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/15 outline-none transition-all" required>
+                    </div>
+                    <p id="pin-error-msg" class="text-center text-xs font-semibold text-rose-600 mt-2 hidden">
+                        Kode PIN 6 digit tidak valid.
+                    </p>
+                </div>
+
+                <!-- Keypad Angka Sentuh Interaktif -->
+                <div class="grid grid-cols-3 gap-1.5 pt-1">
+                    <button type="button" onclick="pressKeypad('1')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">1</button>
+                    <button type="button" onclick="pressKeypad('2')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">2</button>
+                    <button type="button" onclick="pressKeypad('3')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">3</button>
+                    <button type="button" onclick="pressKeypad('4')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">4</button>
+                    <button type="button" onclick="pressKeypad('5')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">5</button>
+                    <button type="button" onclick="pressKeypad('6')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">6</button>
+                    <button type="button" onclick="pressKeypad('7')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">7</button>
+                    <button type="button" onclick="pressKeypad('8')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">8</button>
+                    <button type="button" onclick="pressKeypad('9')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">9</button>
+                    <button type="button" onclick="clearPinInputs()" class="py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 active:scale-95 font-bold text-xs text-rose-600 transition-all">Hapus</button>
+                    <button type="button" onclick="pressKeypad('0')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 font-display font-bold text-base text-slate-800 transition-all">0</button>
+                    <button type="button" onclick="backspaceKeypad()" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 flex items-center justify-center text-slate-700 transition-all" aria-label="Hapus satu digit">
+                        <i data-lucide="delete" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input type="checkbox" id="toggle-show-pin" onchange="togglePinVisibility()" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                        <span>Tampilkan angka</span>
+                    </label>
+                    <button type="button" onclick="syncInitialData(true)" class="text-emerald-700 hover:underline font-semibold inline-flex items-center gap-1">
+                        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Segarkan PIN
+                    </button>
+                </div>
+
+                <button type="submit" id="btn-unlock" class="w-full py-3.5 px-5 rounded-2xl bg-slate-900 hover:bg-emerald-800 text-white font-bold text-sm shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+                    <i data-lucide="unlock" class="w-4 h-4"></i>
+                    <span>Buka Feed Transparansi</span>
+                </button>
+            </form>
+
+            <!-- Quick Login Hint (Untuk Memudahkan Demo & Uji Coba) -->
+            <div class="mt-5 pt-3.5 border-t border-slate-100">
+                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    <span>Akses Cepat (PIN Aktif)</span>
+                    <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="autoFillDemoPin('viewer')" class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-emerald-50/80 hover:bg-emerald-100/80 border border-emerald-200/70 transition-all text-left group">
+                        <div>
+                            <div class="text-[10px] font-medium text-emerald-700">Jamaah</div>
+                            <div id="hint-viewer-pin" class="font-mono font-bold text-xs text-emerald-950">112233</div>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-white text-emerald-700 shadow-xs group-hover:bg-emerald-600 group-hover:text-white transition-colors">Masuk</span>
+                    </button>
+                    <button type="button" onclick="autoFillDemoPin('admin')" class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-amber-50/80 hover:bg-amber-100/80 border border-amber-200/70 transition-all text-left group">
+                        <div>
+                            <div class="text-[10px] font-medium text-amber-700">Admin</div>
+                            <div id="hint-admin-pin" class="font-mono font-bold text-xs text-amber-950">999999</div>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-white text-amber-700 shadow-xs group-hover:bg-amber-600 group-hover:text-white transition-colors">Masuk</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 2. APLIKASI UTAMA BERGAYA INSTAGRAM / THREADS (CENTERED FEED)         -->
+    <!-- ===================================================================== -->
+    <div id="main-app" class="hidden flex-1 flex flex-col items-center">
+        
+        <!-- Kontainer Utama Terpusat Ala Sosial Media (Max-Width 560px) -->
+        <div class="w-full max-w-[560px] bg-white min-h-screen shadow-xl shadow-slate-200/70 border-x border-slate-200/80 flex flex-col pb-24 print-expand">
+            
+            <!-- A. STICKY TOP HEADER (GLASSMORPHISM) -->
+            <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-lg border-b border-slate-100 px-4 py-3 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-xl story-ring-emerald p-[2px] shrink-0">
+                        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-emerald-400">
+                            <i data-lucide="hand-heart" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1">
+                            <span id="header-org-name" class="font-display font-extrabold text-sm sm:text-base tracking-tight text-slate-900 truncate">
+                                INFAQMU
+                            </span>
+                            <i data-lucide="badge-check" class="w-4 h-4 text-emerald-500 fill-emerald-50 shrink-0"></i>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <!-- Indikator Status Koneksi Cloud / Lokal -->
+                            <span id="connection-status-pill" class="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/80">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                <span>Mode Lokal</span>
+                            </span>
+                            <span id="header-org-handle" class="text-[11px] font-medium text-slate-400 truncate">
+                                @infaqmu.peduli
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Indikator Mode & Aksi Header -->
+                <div class="flex items-center gap-1 shrink-0 no-print">
+                    <span id="role-badge" class="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[11px] font-bold items-center gap-1 mr-0.5">
+                        <i data-lucide="eye" class="w-3 h-3"></i> Publik
+                    </span>
+
+                    <!-- Tombol Refresh Sinkronisasi Manual -->
+                    <button type="button" id="btn-manual-refresh" onclick="handleManualRefresh()" class="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors" title="Sinkronkan & Segarkan Data">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Tombol Pengaturan PIN & Supabase (Khusus Admin) -->
+                    <button type="button" id="btn-open-security" onclick="openSecurityModal()" class="hidden p-2 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 transition-colors" title="Pengaturan PIN, Profil & Supabase">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Tombol Kunci / Keluar -->
+                    <button type="button" onclick="lockApplication()" class="p-2 rounded-full hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors" title="Kunci Sesi / Keluar">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Bio Singkat Profil Lembaga ala Instagram -->
+            <div class="px-4 py-2.5 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between gap-2">
+                <p id="header-org-bio" class="text-[11px] text-slate-600 leading-snug line-clamp-2">
+                    Laporan Transparansi Penerimaan & Penyaluran Infaq Sedekah • Terverifikasi Bendahara
+                </p>
+                <span id="role-badge-mobile" class="sm:hidden shrink-0 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[10px] font-bold">
+                    Publik
+                </span>
+            </div>
+
+            <!-- B. STORIES / HIGHLIGHTS ROW (RINGKASAN SALDO & STATISTIK) -->
+            <section class="px-4 pt-3.5 pb-3 border-b border-slate-100 bg-white">
+                <div class="flex items-center justify-between mb-2.5">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Sorotan Kas Umat</span>
+                    <span id="active-period-badge" class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                        November 2026
+                    </span>
+                </div>
+
+                <!-- Horizontal Scrollable Highlights (5 Lingkaran) -->
+                <div class="flex items-stretch justify-between sm:justify-start gap-2.5 sm:gap-3.5 overflow-x-auto no-scrollbar pb-1">
+                    
+                    <!-- Highlight 1: Total Saldo Kas -->
+                    <button type="button" onclick="openHighlightDetail('balance')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
+                        <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full story-ring-emerald p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+                            <div class="w-full h-full rounded-full bg-slate-900 flex flex-col items-center justify-center text-white p-1">
+                                <i data-lucide="wallet" class="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 mb-0.5"></i>
+                                <span id="story-balance-short" class="font-display font-bold text-[10px] leading-none text-emerald-300">Rp 0</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1">Total Saldo</span>
+                        <span class="text-[10px] text-slate-400">Kas Aktif</span>
+                    </button>
+
+                    <!-- Highlight 2: Penerimaan Bulan Ini -->
+                    <button type="button" onclick="setFeedFilter('in')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
+                        <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full story-ring-emerald p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+                            <div class="w-full h-full rounded-full bg-emerald-50 flex flex-col items-center justify-center text-emerald-800 p-1">
+                                <i data-lucide="arrow-down-left" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 mb-0.5"></i>
+                                <span id="story-in-short" class="font-display font-bold text-[10px] leading-none">Rp 0</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1">Penerimaan</span>
+                        <span id="story-in-count" class="text-[10px] text-emerald-600 font-medium">0 masuk</span>
+                    </button>
+
+                    <!-- Highlight 3: Penyaluran Bulan Ini -->
+                    <button type="button" onclick="setFeedFilter('out')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
+                        <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full story-ring-amber p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+                            <div class="w-full h-full rounded-full bg-amber-50 flex flex-col items-center justify-center text-amber-800 p-1">
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 mb-0.5"></i>
+                                <span id="story-out-short" class="font-display font-bold text-[10px] leading-none">Rp 0</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1">Penyaluran</span>
+                        <span id="story-out-count" class="text-[10px] text-amber-600 font-medium">0 salur</span>
+                    </button>
+
+                    <!-- Highlight 4: Persentase Tersalurkan -->
+                    <button type="button" onclick="switchMainView('stats')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
+                        <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full bg-slate-200 p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform">
+                            <div class="w-full h-full rounded-full bg-white flex flex-col items-center justify-center text-slate-800 p-1">
+                                <i data-lucide="pie-chart" class="w-4 h-4 sm:w-5 sm:h-5 text-sky-600 mb-0.5"></i>
+                                <span id="story-ratio-short" class="font-display font-bold text-[11px] leading-none text-sky-700">0%</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1">Tersalurkan</span>
+                        <span class="text-[10px] text-slate-400">Rasio Dana</span>
+                    </button>
+
+                    <!-- Highlight 5: Surplus / Defisit Bulan Ini -->
+                    <button type="button" onclick="openHighlightDetail('net')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
+                        <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full bg-slate-200 p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform">
+                            <div class="w-full h-full rounded-full bg-slate-50 flex flex-col items-center justify-center text-slate-800 p-1">
+                                <i data-lucide="scale" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 mb-0.5"></i>
+                                <span id="story-net-short" class="font-display font-bold text-[10px] leading-none">Rp 0</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1">Surplus/Def</span>
+                        <span class="text-[10px] text-slate-400">Arus Bersih</span>
+                    </button>
+
+                </div>
+            </section>
+
+            <!-- C. FILTER BAR BULAN & TAHUN + PILL FILTER JENIS -->
+            <section class="px-4 py-3 bg-white border-b border-slate-100 space-y-2.5 sticky top-[61px] z-20 no-print">
+                <!-- Baris 1: Pemilih Bulan & Tahun + Pencarian -->
+                <div class="flex items-center gap-2">
+                    <div class="relative flex-1">
+                        <select id="filter-month" onchange="refreshDashboard()" class="w-full appearance-none pl-3 pr-8 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 text-xs font-bold text-slate-800 outline-none cursor-pointer transition-colors">
+                            <option value="all">Semua Bulan</option>
+                            <option value="01">Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+
+                    <div class="relative w-28">
+                        <select id="filter-year" onchange="refreshDashboard()" class="w-full appearance-none pl-3 pr-7 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 text-xs font-bold text-slate-800 outline-none cursor-pointer transition-colors">
+                            <!-- Diisi dinamis JS -->
+                        </select>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+
+                    <button type="button" onclick="toggleSearchBar()" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 text-slate-700 transition-colors" title="Cari Postingan Laporan">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Input Pencarian -->
+                <div id="search-bar-wrapper" class="hidden">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" id="search-input" oninput="refreshDashboard()" placeholder="Cari judul kegiatan, kategori, keterangan..." 
+                            class="w-full pl-8 pr-8 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-xs focus:border-emerald-600 outline-none">
+                        <button type="button" onclick="clearSearch()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Baris 2: Pill Filter Jenis Postingan (Saat di View Feed) -->
+                <div id="feed-filter-pills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                    <button type="button" onclick="setFeedFilter('all')" id="pill-filter-all" 
+                        class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white shrink-0 transition-all">
+                        Semua Postingan
+                    </button>
+                    <button type="button" onclick="setFeedFilter('in')" id="pill-filter-in" 
+                        class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 shrink-0 transition-all">
+                        Penerimaan (+)
+                    </button>
+                    <button type="button" onclick="setFeedFilter('out')" id="pill-filter-out" 
+                        class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-amber-50 hover:text-amber-700 shrink-0 transition-all">
+                        Penyaluran (-)
+                    </button>
+                </div>
+            </section>
+
+            <!-- D. KONTEN UTAMA 1: FEED LAPORAN -->
+            <main id="feed-view" class="flex-1 divide-y divide-slate-100">
+                <!-- Kartu Postingan Feed diisi dinamis oleh JavaScript -->
+            </main>
+
+            <!-- Tampilan Jika Feed Kosong -->
+            <div id="empty-state" class="hidden py-16 px-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="inbox" class="w-7 h-7"></i>
+                </div>
+                <h3 class="font-display font-bold text-slate-800 text-base">Belum Ada Postingan Laporan</h3>
+                <p class="text-xs text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
+                    Tidak ditemukan catatan penerimaan atau penyaluran infaq untuk bulan atau kata kunci yang Anda pilih.
+                </p>
+            </div>
+
+            <!-- E. KONTEN UTAMA 2: TAB STATISTIK & REKAP -->
+            <section id="stats-view" class="hidden p-4 space-y-5">
+                <!-- Kartu Ringkasan Angka Lengkap -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/70">
+                        <div class="flex items-center gap-1.5 text-emerald-700 text-xs font-bold mb-1">
+                            <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+                            <span>Total Masuk</span>
+                        </div>
+                        <div id="stats-card-in" class="font-display font-extrabold text-base sm:text-lg text-emerald-950">Rp 0</div>
+                        <div id="stats-sub-in" class="text-[11px] text-emerald-700/80 mt-0.5">Periode terpilih</div>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/70">
+                        <div class="flex items-center gap-1.5 text-amber-700 text-xs font-bold mb-1">
+                            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                            <span>Total Keluar</span>
+                        </div>
+                        <div id="stats-card-out" class="font-display font-extrabold text-base sm:text-lg text-amber-950">Rp 0</div>
+                        <div id="stats-sub-out" class="text-[11px] text-amber-700/80 mt-0.5">Periode terpilih</div>
+                    </div>
+                </div>
+
+                <!-- Grafik Batang Perbandingan Bulanan -->
+                <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="font-display font-bold text-sm text-slate-900">Grafik Arus Dana Tahun <span id="chart-year-label">2026</span></h3>
+                            <p class="text-[11px] text-slate-500">Perbandingan bulanan pemasukan vs penyaluran</p>
+                        </div>
+                        <div class="flex items-center gap-2.5 text-[10px] font-bold">
+                            <span class="flex items-center gap-1 text-emerald-700"><span class="w-2.5 h-2.5 rounded-xs bg-emerald-500"></span>Masuk</span>
+                            <span class="flex items-center gap-1 text-amber-700"><span class="w-2.5 h-2.5 rounded-xs bg-amber-500"></span>Keluar</span>
+                        </div>
+                    </div>
+                    <div class="relative h-56 w-full">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Distribusi Penyaluran Per Kategori -->
+                <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="font-display font-bold text-sm text-slate-900">Persentase Penyaluran per Kategori</h3>
+                            <p id="category-period-subtitle" class="text-[11px] text-slate-500">Proporsi program kebaikan periode ini</p>
+                        </div>
+                        <span id="disbursement-ratio" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
+                            0%
+                        </span>
+                    </div>
+                    <div id="category-breakdown-list" class="space-y-3">
+                        <!-- Diisi dinamis JS -->
+                    </div>
+                </div>
+
+                <!-- Tombol Cetak Laporan & Unduh CSV -->
+                <div class="grid grid-cols-2 gap-2.5 pt-1 no-print">
+                    <button type="button" onclick="window.print()" class="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all">
+                        <i data-lucide="printer" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Cetak Laporan</span>
+                    </button>
+                    <button type="button" onclick="exportToCSV()" class="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs transition-all">
+                        <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Unduh CSV</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Footer Pengesahan Print -->
+            <footer class="px-4 py-6 text-center text-[11px] text-slate-400 border-t border-slate-100 mt-auto">
+                <p class="font-semibold text-slate-600">PROJECT INFAQMU • Transparansi & Amanah</p>
+                <p class="mt-0.5">Dicetak / Diakses pada <span id="current-date-display"></span></p>
+            </footer>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- BOTTOM FLOATING NAVIGATION BAR (GLASSMORPHISM ALA INSTAGRAM)          -->
+        <!-- ===================================================================== -->
+        <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[440px] bg-slate-950/90 backdrop-blur-xl text-white rounded-full px-4 py-2 shadow-2xl shadow-slate-950/30 border border-white/15 flex items-center justify-around no-print">
+            <!-- Tab 1: Feed Laporan -->
+            <button type="button" onclick="switchMainView('feed'); window.scrollTo({top:0, behavior:'smooth'})" id="nav-btn-feed" class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 text-emerald-400 font-bold text-xs transition-all">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                <span>Feed Laporan</span>
+            </button>
+
+            <!-- Tombol Tengah: Buat Postingan Laporan Baru (Khusus Admin) -->
+            <button type="button" id="fab-create-post" onclick="openTransactionModal()" class="hidden items-center justify-center w-12 h-12 -my-1 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all shrink-0" title="Terbitkan Laporan Baru">
+                <i data-lucide="plus" class="w-6 h-6 stroke-[2.5]"></i>
+            </button>
+
+            <!-- Tab 2: Statistik & Rekap -->
+            <button type="button" onclick="switchMainView('stats'); window.scrollTo({top:0, behavior:'smooth'})" id="nav-btn-stats" class="flex items-center gap-2 px-3.5 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                <span>Statistik & Rekap</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 1: CREATE / EDIT POST LAPORAN (ADMIN -> SUPABASE / LOCAL)       -->
+    <!-- ===================================================================== -->
+    <div id="transaction-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-[500px] w-full p-5 sm:p-6 my-auto border border-slate-100 max-h-[92vh] overflow-y-auto">
+            <!-- Header Modal -->
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-100">
+                <button type="button" onclick="closeTransactionModal()" class="text-xs font-semibold text-slate-500 hover:text-slate-800 px-2 py-1">
+                    Batal
+                </button>
+                <h3 id="modal-tx-title" class="font-display font-bold text-base text-slate-900">
+                    Postingan Laporan Baru
+                </h3>
+                <button type="submit" form="transaction-form" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 px-2 py-1">
+                    Simpan
+                </button>
+            </div>
+
+            <form id="transaction-form" onsubmit="handleSaveTransaction(event)" class="space-y-4 mt-4">
+                <input type="hidden" id="tx-id">
+
+                <!-- Pilih Jenis Postingan (Pemasukan vs Penyaluran) -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="tx-type" value="in" checked onchange="updateCategoryOptions()" class="peer sr-only">
+                        <div class="p-3 rounded-2xl border-2 border-slate-100 bg-slate-50 peer-checked:border-emerald-500 peer-checked:bg-emerald-50/80 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 peer-checked:text-emerald-800 transition-all">
+                            <i data-lucide="arrow-down-left" class="w-4 h-4 text-emerald-600"></i>
+                            <span>Penerimaan Dana</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="tx-type" value="out" onchange="updateCategoryOptions()" class="peer sr-only">
+                        <div class="p-3 rounded-2xl border-2 border-slate-100 bg-slate-50 peer-checked:border-amber-500 peer-checked:bg-amber-50/80 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 peer-checked:text-amber-800 transition-all">
+                            <i data-lucide="arrow-up-right" class="w-4 h-4 text-amber-600"></i>
+                            <span>Penyaluran Dana</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Nominal Besar -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                    <label for="tx-amount" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nominal Dana (Rupiah) *</label>
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-display font-extrabold text-xl text-slate-400">Rp</span>
+                        <input type="number" id="tx-amount" min="100" step="100" required placeholder="0" 
+                            class="w-full bg-transparent font-display font-extrabold text-2xl text-slate-900 outline-none">
+                    </div>
+                </div>
+
+                <!-- Judul Singkat Kegiatan -->
+                <div>
+                    <label for="tx-title" class="block text-xs font-bold text-slate-700 mb-1">Judul Postingan Kegiatan *</label>
+                    <input type="text" id="tx-title" required placeholder="Contoh: Santunan 30 Anak Yatim Binaan" 
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:border-emerald-600 outline-none">
+                </div>
+
+                <!-- Deskripsi Lengkap -->
+                <div>
+                    <label for="tx-description" class="block text-xs font-bold text-slate-700 mb-1">Rincian / Caption Lengkap *</label>
+                    <textarea id="tx-description" rows="2" required placeholder="Tulis rincian penerimaan atau penyaluran dana secara transparan untuk jamaah..." 
+                        class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:border-emerald-600 outline-none resize-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Tanggal -->
+                    <div>
+                        <label for="tx-date" class="block text-xs font-bold text-slate-700 mb-1">Tanggal Transaksi *</label>
+                        <input type="date" id="tx-date" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-emerald-600 outline-none">
+                    </div>
+
+                    <!-- Kategori -->
+                    <div>
+                        <label for="tx-category" class="block text-xs font-bold text-slate-700 mb-1">Kategori Program *</label>
+                        <select id="tx-category" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold focus:border-emerald-600 outline-none">
+                            <!-- Diisi dinamis JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Pilihan 5 Tema Kartu Warna (Emerald, Blue, Amber, Rose, Purple) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Tema Warna Kartu Postingan</label>
+                    <div class="grid grid-cols-5 gap-2">
+                        <label class="cursor-pointer text-center">
+                            <input type="radio" name="tx-theme" value="emerald" checked class="peer sr-only">
+                            <div class="py-2 px-1 rounded-xl border-2 border-slate-100 peer-checked:border-emerald-600 bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-[10px] font-bold shadow-xs">
+                                Emerald
+                            </div>
+                        </label>
+                        <label class="cursor-pointer text-center">
+                            <input type="radio" name="tx-theme" value="blue" class="peer sr-only">
+                            <div class="py-2 px-1 rounded-xl border-2 border-slate-100 peer-checked:border-blue-600 bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-[10px] font-bold shadow-xs">
+                                Blue
+                            </div>
+                        </label>
+                        <label class="cursor-pointer text-center">
+                            <input type="radio" name="tx-theme" value="amber" class="peer sr-only">
+                            <div class="py-2 px-1 rounded-xl border-2 border-slate-100 peer-checked:border-amber-600 bg-gradient-to-br from-amber-500 to-orange-600 text-white text-[10px] font-bold shadow-xs">
+                                Amber
+                            </div>
+                        </label>
+                        <label class="cursor-pointer text-center">
+                            <input type="radio" name="tx-theme" value="rose" class="peer sr-only">
+                            <div class="py-2 px-1 rounded-xl border-2 border-slate-100 peer-checked:border-rose-600 bg-gradient-to-br from-rose-500 to-pink-600 text-white text-[10px] font-bold shadow-xs">
+                                Rose
+                            </div>
+                        </label>
+                        <label class="cursor-pointer text-center">
+                            <input type="radio" name="tx-theme" value="purple" class="peer sr-only">
+                            <div class="py-2 px-1 rounded-xl border-2 border-slate-100 peer-checked:border-purple-600 bg-gradient-to-br from-purple-600 to-violet-700 text-white text-[10px] font-bold shadow-xs">
+                                Purple
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-submit-tx" class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    <span>Terbitkan Laporan</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2: PENGATURAN ADMIN (PIN 6 DIGIT, PROFIL & KONFIGURASI SUPABASE) -->
+    <!-- ===================================================================== -->
+    <div id="security-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-[500px] w-full p-5 sm:p-6 my-auto border border-slate-100 max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-base text-slate-900">Pengaturan Admin & Cloud</h3>
+                </div>
+                <button type="button" onclick="closeSecurityModal()" class="p-1.5 rounded-full hover:bg-slate-100 text-slate-500">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form id="security-form" onsubmit="handleSaveSecuritySettings(event)" class="space-y-4 mt-4">
+                <!-- Bagian 1: Konfigurasi Database Supabase -->
+                <div class="p-4 rounded-2xl bg-sky-50/70 border border-sky-200/80 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs font-bold text-sky-950 flex items-center gap-1.5">
+                            <i data-lucide="database" class="w-4 h-4 text-sky-600"></i>
+                            <span>Koneksi Database Supabase</span>
+                        </div>
+                        <button type="button" onclick="openSqlGuideModal()" class="text-[11px] font-bold text-sky-700 hover:underline flex items-center gap-1">
+                            <i data-lucide="book-open" class="w-3 h-3"></i> Panduan Setup SQL
+                        </button>
+                    </div>
+
+                    <div>
+                        <label for="set-sb-url" class="block text-[11px] font-semibold text-slate-700 mb-1">Supabase Project URL</label>
+                        <input type="url" id="set-sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" 
+                            class="w-full px-3 py-2 rounded-xl border border-sky-200 bg-white text-xs font-mono focus:border-sky-600 outline-none">
+                    </div>
+
+                    <div>
+                        <label for="set-sb-key" class="block text-[11px] font-semibold text-slate-700 mb-1">Supabase Anon Public Key</label>
+                        <input type="password" id="set-sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
+                            class="w-full px-3 py-2 rounded-xl border border-sky-200 bg-white text-xs font-mono focus:border-sky-600 outline-none">
+                    </div>
+
+                    <button type="button" onclick="testAndSyncSupabase()" id="btn-test-sb" class="w-full py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        <span>Uji & Sinkronkan Database</span>
+                    </button>
+                </div>
+
+                <!-- Bagian 2: Profil Lembaga -->
+                <div class="space-y-2.5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div>
+                            <label for="set-org-name" class="block text-xs font-bold text-slate-700 mb-1">Nama Organisasi / Masjid</label>
+                            <input type="text" id="set-org-name" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-emerald-600 outline-none">
+                        </div>
+                        <div>
+                            <label for="set-org-handle" class="block text-xs font-bold text-slate-700 mb-1">Username / Handle</label>
+                            <input type="text" id="set-org-handle" required placeholder="infaqmu.peduli" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-emerald-600 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="set-org-bio" class="block text-xs font-bold text-slate-700 mb-1">Bio / Keterangan Singkat</label>
+                        <input type="text" id="set-org-bio" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:border-emerald-600 outline-none">
+                    </div>
+                </div>
+
+                <!-- Bagian 3: Kode PIN 6 Digit -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
+                    <div class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <i data-lucide="key-round" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Ubah Kode Akses 6 Digit</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="set-viewer-pin" class="block text-[11px] font-semibold text-slate-600 mb-1">PIN Jamaah (Publik)</label>
+                            <input type="text" id="set-viewer-pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required 
+                                class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-base font-bold tracking-widest text-center text-emerald-900 outline-none">
+                        </div>
+                        <div>
+                            <label for="set-admin-pin" class="block text-[11px] font-semibold text-slate-600 mb-1">PIN Panitia / Admin</label>
+                            <input type="text" id="set-admin-pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required 
+                                class="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono text-base font-bold tracking-widest text-center text-amber-900 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                    <button type="button" onclick="resetDemoData()" class="text-xs font-semibold text-rose-600 hover:underline">
+                        Reset Data Contoh
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition-all">
+                        Simpan Semua Pengaturan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 3: PANDUAN SETUP SQL SUPABASE (DENGAN TOMBOL SALIN CEPAT)        -->
+    <!-- ===================================================================== -->
+    <div id="sql-guide-modal" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-[540px] w-full p-5 sm:p-6 my-auto border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i data-lucide="terminal" class="w-4 h-4"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-base text-slate-900">Panduan Setup SQL Supabase</h3>
+                </div>
+                <button type="button" onclick="closeSqlGuideModal()" class="p-1.5 rounded-full hover:bg-slate-100 text-slate-500">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div class="mt-3 space-y-3 text-xs text-slate-600 leading-relaxed">
+                <p>1. Masuk ke dashboard proyek Anda di <strong>supabase.com</strong>, lalu buka menu <strong>SQL Editor</strong> &rarr; <strong>New query</strong>.</p>
+                <p>2. Salin seluruh kode SQL di bawah ini, tempelkan ke editor Supabase, lalu klik tombol <strong>Run</strong>:</p>
+
+                <div class="relative">
+                    <button type="button" onclick="copySqlScript()" class="absolute top-2.5 right-2.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm transition-colors">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span>Salin Skrip SQL</span>
+                    </button>
+                    <pre id="supabase-sql-code" class="bg-slate-950 text-emerald-300 p-3.5 pt-11 rounded-2xl text-[11px] font-mono overflow-x-auto leading-relaxed select-all">-- 1. Tabel Pengaturan Profil & PIN 6 Digit
+CREATE TABLE IF NOT EXISTS infaq_settings (
+  id INT PRIMARY KEY,
+  org_name TEXT NOT NULL,
+  org_handle TEXT NOT NULL,
+  org_bio TEXT NOT NULL,
+  visitor_pin TEXT NOT NULL,
+  admin_pin TEXT NOT NULL
+);
+
+INSERT INTO infaq_settings (id, org_name, org_handle, org_bio, visitor_pin, admin_pin)
+VALUES (
+  1,
+  'INFAQMU',
+  'infaqmu.peduli',
+  'Laporan Transparansi Penerimaan & Penyaluran Infaq Sedekah • Terverifikasi Bendahara',
+  '112233',
+  '999999'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 2. Tabel Transaksi Penerimaan & Penyaluran
+CREATE TABLE IF NOT EXISTS infaq_transactions (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  type TEXT NOT NULL,
+  category TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  amount BIGINT NOT NULL,
+  tx_date DATE NOT NULL,
+  theme TEXT DEFAULT 'emerald',
+  aamiin_count INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. Kebijakan Akses Publik API
+ALTER TABLE infaq_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE infaq_transactions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public Access Settings" ON infaq_settings;
+CREATE POLICY "Public Access Settings" ON infaq_settings FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public Access Transactions" ON infaq_transactions;
+CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (true) WITH CHECK (true);</pre>
+                </div>
+
+                <p>3. Setelah berhasil, buka <strong>Project Settings &rarr; API</strong> di Supabase, lalu salin <strong>Project URL</strong> dan <strong>anon public key</strong> ke form pengaturan admin.</p>
+            </div>
+
+            <button type="button" onclick="closeSqlGuideModal()" class="w-full mt-4 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">
+                Mengerti & Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 4: KONFIRMASI HAPUS POSTINGAN (PENGGANTI CONFIRM())              -->
+    <!-- ===================================================================== -->
+    <div id="delete-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-xs w-full p-6 text-center border border-slate-100">
+            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="trash-2" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-display font-bold text-base text-slate-900">Hapus Postingan Ini?</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                Data akan dihapus permanen dan saldo kas akan otomatis dihitung ulang.
+            </p>
+            <div class="grid grid-cols-2 gap-2 mt-5">
+                <button type="button" onclick="closeDeleteModal()" class="py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">
+                    Batal
+                </button>
+                <button type="button" id="confirm-delete-btn" class="py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-md shadow-rose-600/20">
+                    Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- LOGIKA JAVASCRIPT APLIKASI + INTEGRASI SUPABASE CLOUD                 -->
+    <!-- ===================================================================== -->
+    <script>
+        // =====================================================================
+        // KONFIGURASI PERMANEN SUPABASE (OPSIONAL UNTUK DEPLOY NETLIFY)
+        // Tempelkan Project URL dan Anon Public Key Anda di bawah ini sebelum
+        // mengunggah index.html ke Netlify agar semua jamaah langsung terhubung
+        // ke database secara otomatis tanpa perlu mengatur ulang di perangkatnya.
+        // =====================================================================
+        const DEFAULT_SUPABASE_URL = "";
+        const DEFAULT_SUPABASE_KEY = "";
+
+        const STORAGE_KEYS = {
+            SB_CONFIG: 'infaqmu_supabase_creds_v3',
+            SETTINGS: 'infaqmu_local_settings_v3',
+            TRANSACTIONS: 'infaqmu_local_transactions_v3',
+            LIKED_IDS: 'infaqmu_local_liked_v3'
+        };
+
+        const CATEGORIES = {
+            in: [
+                'Kotak Amal Jumat',
+                'Donatur Tetap Bulanan',
+                'Transfer Rekening Infaq',
+                'Infaq Hamba Allah',
+                'Infaq Majelis Taklim',
+                'Penerimaan Lainnya'
+            ],
+            out: [
+                'Santunan Anak Yatim & Piatu',
+                'Bantuan Fakir Miskin & Dhuafa',
+                'Bantuan Kesehatan & Pengobatan',
+                'Bantuan Tanggap Bencana',
+                'Operasional Dakwah & TPQ',
+                'Pemeliharaan Sarana Masjid'
+            ]
+        };
+
+        const MONTH_NAMES = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        // --- STATE APLIKASI ---
+        let supabaseClient = null;
+        let isCloudConnected = false;
+        let sbCredentials = { url: '', key: '' };
+
+        let appSettings = {
+            orgName: 'INFAQMU',
+            orgHandle: 'infaqmu.peduli',
+            orgBio: 'Laporan Transparansi Penerimaan & Penyaluran Infaq Sedekah • Terverifikasi Bendahara',
+            viewerPin: '112233',
+            adminPin: '999999'
+        };
+
+        let transactions = [];
+        let likedTxIds = new Set();
+        let currentRole = null; // 'viewer' | 'admin'
+        let selectedGateRole = 'viewer';
+        let currentMainView = 'feed'; // 'feed' | 'stats'
+        let currentFeedFilter = 'all'; // 'all' | 'in' | 'out'
+        let monthlyChartInstance = null;
+        let pendingDeleteId = null;
+
+        // --- DATA DUMMY DEFAULT (UNTUK MODE LOKAL ATAU DATABASE BARU) ---
+        function getDefaultDummyData() {
+            return [
+                {
+                    id: 'local-101', tx_date: '2026-09-04', type: 'in', category: 'Kotak Amal Jumat',
+                    title: 'Kotak Amal Shalat Jumat Pekan 1',
+                    description: 'Alhamdulillah, perolehan Kotak Amal Shalat Jumat Pekan Pertama September telah dihitung bersama 3 saksi pengurus takmir.',
+                    amount: 4250000, theme: 'emerald', aamiin_count: 24
+                },
+                {
+                    id: 'local-102', tx_date: '2026-09-15', type: 'out', category: 'Santunan Anak Yatim & Piatu',
+                    title: 'Santunan Pendidikan 25 Anak Yatim',
+                    description: 'Penyaluran santunan pendidikan dan uang saku bulanan untuk 25 adik-adik yatim binaan wilayah RW 01 - RW 05.',
+                    amount: 5000000, theme: 'amber', aamiin_count: 48
+                },
+                {
+                    id: 'local-201', tx_date: '2026-10-08', type: 'in', category: 'Donatur Tetap Bulanan',
+                    title: 'Infaq Rutin 18 Muhsinin Oktober',
+                    description: 'Titipan infaq rutin dari 18 Donatur Tetap Program Peduli Umat bulan Oktober via rekening syariah yayasan.',
+                    amount: 7100000, theme: 'blue', aamiin_count: 31
+                },
+                {
+                    id: 'local-202', tx_date: '2026-10-19', type: 'out', category: 'Bantuan Kesehatan & Pengobatan',
+                    title: 'Bantuan Operasi Katarak Bapak Sulaeman',
+                    description: 'Bantuan biaya operasi katarak dan obat-obatan rawat jalan untuk Bapak Sulaeman (warga dhuafa). Semoga Allah berikan kesembuhan.',
+                    amount: 3750000, theme: 'rose', aamiin_count: 62
+                },
+                {
+                    id: 'local-301', tx_date: '2026-11-01', type: 'in', category: 'Transfer Rekening Infaq',
+                    title: 'Infaq Awal Bulan via QRIS & Transfer',
+                    description: 'Penerimaan infaq awal bulan dari para muhsinin melalui transfer rekening resmi & QRIS Masjid Al-Ikhlas.',
+                    amount: 5850000, theme: 'emerald', aamiin_count: 37
+                },
+                {
+                    id: 'local-302', tx_date: '2026-11-06', type: 'in', category: 'Kotak Amal Jumat',
+                    title: 'Perolehan Kotak Amal Jumat Pekan 1 Nov',
+                    description: 'Perolehan infaq Kotak Amal Jumat Pekan 1 November. Jazakumullahu khairan katsiran kepada seluruh jamaah.',
+                    amount: 4950000, theme: 'blue', aamiin_count: 41
+                },
+                {
+                    id: 'local-303', tx_date: '2026-11-09', type: 'out', category: 'Santunan Anak Yatim & Piatu',
+                    title: 'Paket Perlengkapan Sekolah & Santunan',
+                    description: 'Penyaluran paket perlengkapan sekolah & santunan tunai bagi 30 anak yatim piatu binaan yayasan.',
+                    amount: 4500000, theme: 'purple', aamiin_count: 79
+                },
+                {
+                    id: 'local-304', tx_date: '2026-11-12', type: 'in', category: 'Infaq Majelis Taklim',
+                    title: 'Kencleng Kajian Rutin Ahad Pagi',
+                    description: 'Kencleng infaq jamaah kajian rutin Ahad pagi bersama Ustadz H. Ridwan.',
+                    amount: 2350000, theme: 'emerald', aamiin_count: 29
+                },
+                {
+                    id: 'local-305', tx_date: '2026-11-15', type: 'out', category: 'Bantuan Tanggap Bencana',
+                    title: 'Distribusi Logistik & Air Bersih Banjir',
+                    description: 'Distribusi bantuan logistik makanan siap saji, selimut, dan air bersih untuk saudara kita yang terdampak banjir.',
+                    amount: 3000000, theme: 'rose', aamiin_count: 94
+                },
+                {
+                    id: 'local-306', tx_date: '2026-11-17', type: 'out', category: 'Bantuan Fakir Miskin & Dhuafa',
+                    title: '25 Paket Sembako Lansia Dhuafa',
+                    description: 'Penyaluran 25 paket sembako beras premium & minyak goreng untuk lansia dhuafa di sekitar lingkungan masjid.',
+                    amount: 2150000, theme: 'amber', aamiin_count: 65
+                }
+            ];
+        }
+
+        // --- INISIALISASI HALAMAN ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadLocalFallbackData();
+            initSupabaseCredentials();
+            setupPinInputListeners();
+
+            const today = new Date();
+            document.getElementById('current-date-display').textContent = today.toLocaleDateString('id-ID', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            lucide.createIcons();
+
+            // Cek dan sinkronkan dengan Supabase sebelum user memasukkan PIN
+            await syncInitialData(false);
+
+            const firstPinBox = document.querySelector('.pin-box');
+            if (firstPinBox) firstPinBox.focus();
+        });
+
+        // --- MANAJEMEN KREDENSIAL & INISIALISASI SUPABASE ---
+        function initSupabaseCredentials() {
+            let savedCreds = null;
+            try {
+                const raw = localStorage.getItem(STORAGE_KEYS.SB_CONFIG);
+                if (raw) savedCreds = JSON.parse(raw);
+            } catch (e) {}
+
+            // Prioritaskan konfigurasi yang tersimpan di localStorage, lalu konstanta DEFAULT
+            const url = (savedCreds && savedCreds.url) ? savedCreds.url.trim() : DEFAULT_SUPABASE_URL.trim();
+            const key = (savedCreds && savedCreds.key) ? savedCreds.key.trim() : DEFAULT_SUPABASE_KEY.trim();
+
+            sbCredentials = { url, key };
+            createSupabaseClientInstance();
+        }
+
+        function createSupabaseClientInstance() {
+            if (sbCredentials.url && sbCredentials.key && window.supabase) {
+                try {
+                    supabaseClient = window.supabase.createClient(sbCredentials.url, sbCredentials.key);
+                } catch (err) {
+                    console.error('Gagal inisialisasi klien Supabase:', err);
+                    supabaseClient = null;
+                }
+            } else {
+                supabaseClient = null;
+            }
+        }
+
+        function loadLocalFallbackData() {
+            try {
+                const savedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+                if (savedSettings) {
+                    appSettings = { ...appSettings, ...JSON.parse(savedSettings) };
+                }
+
+                const savedTx = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
+                if (savedTx) {
+                    transactions = JSON.parse(savedTx);
+                } else {
+                    transactions = getDefaultDummyData();
+                    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
+                }
+
+                const savedLikes = localStorage.getItem(STORAGE_KEYS.LIKED_IDS);
+                if (savedLikes) {
+                    likedTxIds = new Set(JSON.parse(savedLikes));
+                }
+            } catch (e) {
+                transactions = getDefaultDummyData();
+            }
+
+            applySettingsToUI();
+        }
+
+        function saveLocalCache() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(appSettings));
+                localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
+            } catch (e) {}
+        }
+
+        function saveLikesToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.LIKED_IDS, JSON.stringify(Array.from(likedTxIds)));
+            } catch (e) {}
+        }
+
+        // --- SINKRONISASI DATA AWAL & MANUAL DENGAN SUPABASE ---
+        async function syncInitialData(showNotification = false) {
+            updateSyncStatusUI('syncing');
+
+            if (!supabaseClient) {
+                isCloudConnected = false;
+                updateSyncStatusUI('local');
+                applySettingsToUI();
+                if (showNotification) {
+                    showToast('Aplikasi berjalan dalam Mode Lokal (Supabase belum dikonfigurasi).', 'info');
+                }
+                return false;
+            }
+
+            try {
+                // 1. Ambil pengaturan & PIN dari tabel infaq_settings (id = 1)
+                const { data: settingsData, error: settingsError } = await supabaseClient
+                    .from('infaq_settings')
+                    .select('*')
+                    .eq('id', 1)
+                    .maybeSingle();
+
+                if (settingsError) throw settingsError;
+
+                if (settingsData) {
+                    appSettings = {
+                        orgName: settingsData.org_name || appSettings.orgName,
+                        orgHandle: (settingsData.org_handle || appSettings.orgHandle).replace(/^@/, ''),
+                        orgBio: settingsData.org_bio || appSettings.orgBio,
+                        viewerPin: String(settingsData.visitor_pin || appSettings.viewerPin),
+                        adminPin: String(settingsData.admin_pin || appSettings.adminPin)
+                    };
+                } else {
+                    // Jika tabel kosong, sisipkan pengaturan default
+                    await supabaseClient.from('infaq_settings').upsert({
+                        id: 1,
+                        org_name: appSettings.orgName,
+                        org_handle: appSettings.orgHandle,
+                        org_bio: appSettings.orgBio,
+                        visitor_pin: appSettings.viewerPin,
+                        admin_pin: appSettings.adminPin
+                    });
+                }
+
+                // 2. Ambil daftar transaksi dari tabel infaq_transactions
+                const { data: txData, error: txError } = await supabaseClient
+                    .from('infaq_transactions')
+                    .select('*')
+                    .order('tx_date', { ascending: false })
+                    .order('id', { ascending: false });
+
+                if (txError) throw txError;
+
+                if (Array.isArray(txData)) {
+                    transactions = txData.map(row => ({
+                        id: row.id,
+                        type: row.type,
+                        category: row.category,
+                        title: row.title,
+                        description: row.description || '',
+                        amount: Number(row.amount),
+                        tx_date: row.tx_date,
+                        theme: row.theme || 'emerald',
+                        aamiin_count: Number(row.aamiin_count || 0)
+                    }));
+                }
+
+                isCloudConnected = true;
+                saveLocalCache();
+                applySettingsToUI();
+                updateSyncStatusUI('cloud');
+
+                if (currentRole) {
+                    populateYearFilter();
+                    refreshDashboard();
+                }
+
+                if (showNotification) {
+                    showToast('Berhasil tersinkronisasi dengan Supabase Cloud!', 'success');
+                }
+                return true;
+            } catch (err) {
+                console.warn('Supabase sync fallback ke lokal:', err.message || err);
+                isCloudConnected = false;
+                updateSyncStatusUI('local');
+                applySettingsToUI();
+                if (showNotification) {
+                    showToast('Gagal terhubung ke Supabase. Menggunakan data lokal.', 'error');
+                }
+                return false;
+            }
+        }
+
+        function updateSyncStatusUI(state) {
+            const gateBadge = document.getElementById('gate-sync-badge');
+            const headerPill = document.getElementById('connection-status-pill');
+
+            if (state === 'syncing') {
+                if (gateBadge) {
+                    gateBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-[11px] font-semibold';
+                    gateBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span><span>Menyinkronkan Cloud...</span>';
+                }
+                if (headerPill) {
+                    headerPill.className = 'inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/80';
+                    headerPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span><span>Sinkron...</span>';
+                }
+            } else if (state === 'cloud') {
+                if (gateBadge) {
+                    gateBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[11px] font-bold';
+                    gateBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Cloud Terhubung</span>';
+                }
+                if (headerPill) {
+                    headerPill.className = 'inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80';
+                    headerPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>Cloud Terhubung</span>';
+                }
+            } else {
+                if (gateBadge) {
+                    gateBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200/80 text-[11px] font-bold';
+                    gateBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Mode Lokal</span>';
+                }
+                if (headerPill) {
+                    headerPill.className = 'inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/80';
+                    headerPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span>Mode Lokal</span>';
+                }
+            }
+        }
+
+        function applySettingsToUI() {
+            const cleanHandle = appSettings.orgHandle.replace(/^@/, '');
+            document.getElementById('gate-org-name').textContent = appSettings.orgName;
+            document.getElementById('gate-org-handle').textContent = `@${cleanHandle} • Laporan Dana Umat`;
+            document.getElementById('header-org-name').textContent = appSettings.orgName;
+            document.getElementById('header-org-handle').textContent = `@${cleanHandle}`;
+            document.getElementById('header-org-bio').textContent = appSettings.orgBio;
+
+            document.getElementById('hint-viewer-pin').textContent = appSettings.viewerPin;
+            document.getElementById('hint-admin-pin').textContent = appSettings.adminPin;
+        }
+
+        async function handleManualRefresh() {
+            const btn = document.getElementById('btn-manual-refresh');
+            btn.classList.add('animate-spin');
+            await syncInitialData(true);
+            setTimeout(() => btn.classList.remove('animate-spin'), 400);
+        }
+
+        // --- GERBANG AKSES PIN 6 DIGIT & KEYPAD INTERAKTIF ---
+        function switchGateRole(role) {
+            selectedGateRole = role;
+            const tabViewer = document.getElementById('tab-role-viewer');
+            const tabAdmin = document.getElementById('tab-role-admin');
+            const promptLabel = document.getElementById('pin-prompt-label');
+            const btnUnlock = document.getElementById('btn-unlock');
+
+            if (role === 'viewer') {
+                tabViewer.className = 'flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-emerald-800 shadow-sm';
+                tabAdmin.className = 'flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-500 hover:text-slate-900';
+                promptLabel.textContent = 'Masukkan Kode PIN 6 Digit dari Admin';
+                btnUnlock.className = 'w-full py-3.5 px-5 rounded-2xl bg-slate-900 hover:bg-emerald-800 text-white font-bold text-sm shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]';
+                btnUnlock.innerHTML = '<i data-lucide="unlock" class="w-4 h-4"></i><span>Buka Feed Transparansi</span>';
+            } else {
+                tabAdmin.className = 'flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-amber-800 shadow-sm';
+                tabViewer.className = 'flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-500 hover:text-slate-900';
+                promptLabel.textContent = 'Masukkan PIN 6 Digit Khusus Panitia / Admin';
+                btnUnlock.className = 'w-full py-3.5 px-5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]';
+                btnUnlock.innerHTML = '<i data-lucide="shield-check" class="w-4 h-4"></i><span>Masuk sebagai Admin</span>';
+            }
+
+            clearPinInputs();
+            lucide.createIcons();
+        }
+
+        function pressKeypad(digit) {
+            const boxes = document.querySelectorAll('.pin-box');
+            document.getElementById('pin-error-msg').classList.add('hidden');
+            for (let i = 0; i < boxes.length; i++) {
+                if (!boxes[i].value) {
+                    boxes[i].value = digit;
+                    if (i < boxes.length - 1) {
+                        boxes[i + 1].focus();
+                    } else {
+                        const fullPin = Array.from(boxes).map(b => b.value).join('');
+                        if (fullPin.length === 6) verifyAndUnlock(fullPin);
+                    }
+                    break;
+                }
+            }
+        }
+
+        function backspaceKeypad() {
+            const boxes = document.querySelectorAll('.pin-box');
+            document.getElementById('pin-error-msg').classList.add('hidden');
+            for (let i = boxes.length - 1; i >= 0; i--) {
+                if (boxes[i].value) {
+                    boxes[i].value = '';
+                    boxes[i].focus();
+                    break;
+                }
+            }
+        }
+
+        function setupPinInputListeners() {
+            const boxes = document.querySelectorAll('.pin-box');
+            boxes.forEach((box, idx) => {
+                box.addEventListener('input', (e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    e.target.value = val;
+                    document.getElementById('pin-error-msg').classList.add('hidden');
+
+                    if (val && idx < boxes.length - 1) {
+                        boxes[idx + 1].focus();
+                    }
+
+                    if (idx === boxes.length - 1 && val) {
+                        const fullPin = Array.from(boxes).map(b => b.value).join('');
+                        if (fullPin.length === 6) verifyAndUnlock(fullPin);
+                    }
+                });
+
+                box.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+                        boxes[idx - 1].focus();
+                    }
+                });
+
+                box.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+                    if (pasted.length > 0) {
+                        pasted.split('').forEach((char, i) => {
+                            if (boxes[i]) boxes[i].value = char;
+                        });
+                        if (pasted.length === 6) verifyAndUnlock(pasted);
+                        else if (boxes[pasted.length]) boxes[pasted.length].focus();
+                    }
+                });
+            });
+        }
+
+        function clearPinInputs() {
+            const boxes = document.querySelectorAll('.pin-box');
+            boxes.forEach(b => b.value = '');
+            document.getElementById('pin-error-msg').classList.add('hidden');
+            if (boxes[0]) boxes[0].focus();
+        }
+
+        function togglePinVisibility() {
+            const isChecked = document.getElementById('toggle-show-pin').checked;
+            document.querySelectorAll('.pin-box').forEach(b => {
+                b.type = isChecked ? 'text' : 'password';
+            });
+        }
+
+        function autoFillDemoPin(role) {
+            switchGateRole(role);
+            const pinToFill = role === 'admin' ? appSettings.adminPin : appSettings.viewerPin;
+            const boxes = document.querySelectorAll('.pin-box');
+            pinToFill.split('').forEach((digit, idx) => {
+                if (boxes[idx]) boxes[idx].value = digit;
+            });
+            verifyAndUnlock(pinToFill);
+        }
+
+        function handlePinSubmit(e) {
+            e.preventDefault();
+            const boxes = document.querySelectorAll('.pin-box');
+            const enteredPin = Array.from(boxes).map(b => b.value).join('');
+            verifyAndUnlock(enteredPin);
+        }
+
+        function verifyAndUnlock(enteredPin) {
+            const errorEl = document.getElementById('pin-error-msg');
+            const container = document.getElementById('pin-inputs-container');
+
+            if (enteredPin.length !== 6) {
+                errorEl.textContent = 'Harap lengkapi 6 digit angka PIN.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            if (selectedGateRole === 'viewer' && enteredPin === appSettings.viewerPin) {
+                grantAccess('viewer');
+            } else if (selectedGateRole === 'admin' && enteredPin === appSettings.adminPin) {
+                grantAccess('admin');
+            } else if (enteredPin === appSettings.adminPin) {
+                grantAccess('admin');
+            } else {
+                errorEl.textContent = selectedGateRole === 'admin'
+                    ? 'PIN Admin 6 digit salah. Silakan coba lagi.'
+                    : 'Kode Akses Jamaah 6 digit salah. Minta kode terbaru ke admin.';
+                errorEl.classList.remove('hidden');
+                container.classList.remove('animate-shake');
+                void container.offsetWidth;
+                container.classList.add('animate-shake');
+                clearPinInputs();
+            }
+        }
+
+        function grantAccess(role) {
+            currentRole = role;
+            document.getElementById('access-gate').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+
+            const roleBadge = document.getElementById('role-badge');
+            const roleBadgeMobile = document.getElementById('role-badge-mobile');
+            const btnSecurity = document.getElementById('btn-open-security');
+            const fabCreate = document.getElementById('fab-create-post');
+
+            if (role === 'admin') {
+                roleBadge.className = 'hidden sm:inline-flex px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-bold items-center gap-1 mr-0.5';
+                roleBadge.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3 text-amber-600"></i> Admin';
+                roleBadgeMobile.className = 'sm:hidden shrink-0 px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold';
+                roleBadgeMobile.textContent = 'Admin';
+                btnSecurity.classList.remove('hidden');
+                fabCreate.classList.remove('hidden');
+                fabCreate.classList.add('flex');
+                showToast('Selamat datang, Admin! Mode kelola laporan & PIN aktif.', 'success');
+            } else {
+                roleBadge.className = 'hidden sm:inline-flex px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[11px] font-bold items-center gap-1 mr-0.5';
+                roleBadge.innerHTML = '<i data-lucide="eye" class="w-3 h-3"></i> Publik';
+                roleBadgeMobile.className = 'sm:hidden shrink-0 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[10px] font-bold';
+                roleBadgeMobile.textContent = 'Publik';
+                btnSecurity.classList.add('hidden');
+                fabCreate.classList.add('hidden');
+                fabCreate.classList.remove('flex');
+                showToast('Akses diizinkan. Selamat melihat laporan transparansi.', 'success');
+            }
+
+            populateYearFilter();
+            document.getElementById('filter-month').value = '11';
+            switchMainView('feed');
+            lucide.createIcons();
+        }
+
+        function lockApplication() {
+            currentRole = null;
+            clearPinInputs();
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('access-gate').classList.remove('hidden');
+            showToast('Aplikasi dikunci kembali.', 'info');
+        }
+
+        // --- NAVIGASI VIEW & FILTER ---
+        function populateYearFilter() {
+            const yearSelect = document.getElementById('filter-year');
+            const yearsSet = new Set(['2026', '2025']);
+            transactions.forEach(tx => {
+                if (tx.tx_date) yearsSet.add(tx.tx_date.substring(0, 4));
+            });
+
+            const sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
+            const currentVal = yearSelect.value || '2026';
+
+            yearSelect.innerHTML = sortedYears.map(y =>
+                `<option value="${y}" ${y === currentVal ? 'selected' : ''}>${y}</option>`
+            ).join('');
+        }
+
+        function toggleSearchBar() {
+            const wrapper = document.getElementById('search-bar-wrapper');
+            wrapper.classList.toggle('hidden');
+            if (!wrapper.classList.contains('hidden')) {
+                document.getElementById('search-input').focus();
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-bar-wrapper').classList.add('hidden');
+            refreshDashboard();
+        }
+
+        function switchMainView(view) {
+            currentMainView = view;
+            const navFeed = document.getElementById('nav-btn-feed');
+            const navStats = document.getElementById('nav-btn-stats');
+            const filterPills = document.getElementById('feed-filter-pills');
+
+            if (view === 'feed') {
+                navFeed.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/15 text-emerald-400 font-bold text-xs transition-all';
+                navStats.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all';
+                filterPills.classList.remove('hidden');
+            } else {
+                navStats.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/15 text-emerald-400 font-bold text-xs transition-all';
+                navFeed.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all';
+                filterPills.classList.add('hidden');
+            }
+
+            refreshDashboard();
+        }
+
+        function setFeedFilter(type) {
+            currentFeedFilter = type;
+            if (currentMainView !== 'feed') {
+                switchMainView('feed');
+                return;
+            }
+
+            ['all', 'in', 'out'].forEach(t => {
+                const btn = document.getElementById(`pill-filter-${t}`);
+                if (!btn) return;
+                if (t === type) {
+                    btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white shrink-0 transition-all';
+                } else {
+                    btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200/70 shrink-0 transition-all';
+                }
+            });
+
+            refreshDashboard();
+        }
+
+        function refreshDashboard() {
+            const selectedMonth = document.getElementById('filter-month').value;
+            const selectedYear = document.getElementById('filter-year').value;
+            const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+
+            // 1. Hitung Total Saldo Kas Keseluruhan & Saldo Berjalan Tiap Transaksi
+            const chronological = [...transactions].sort((a, b) => new Date(a.tx_date) - new Date(b.tx_date));
+            let runningBal = 0;
+            const runningBalanceMap = {};
+
+            chronological.forEach(tx => {
+                if (tx.type === 'in') runningBal += Number(tx.amount);
+                else runningBal -= Number(tx.amount);
+                runningBalanceMap[tx.id] = runningBal;
+            });
+
+            const overallBalance = runningBal;
+
+            // 2. Filter transaksi untuk periode Tahun & Bulan terpilih
+            const periodTransactions = transactions.filter(tx => {
+                if (!tx.tx_date) return false;
+                const txYear = tx.tx_date.substring(0, 4);
+                const txMonth = tx.tx_date.substring(5, 7);
+                const matchYear = txYear === selectedYear;
+                const matchMonth = selectedMonth === 'all' || txMonth === selectedMonth;
+                return matchYear && matchMonth;
+            });
+
+            let periodIn = 0, countIn = 0;
+            let periodOut = 0, countOut = 0;
+
+            periodTransactions.forEach(tx => {
+                if (tx.type === 'in') {
+                    periodIn += Number(tx.amount);
+                    countIn++;
+                } else {
+                    periodOut += Number(tx.amount);
+                    countOut++;
+                }
+            });
+
+            const periodNet = periodIn - periodOut;
+            const ratio = periodIn > 0 ? Math.round((periodOut / periodIn) * 100) : (periodOut > 0 ? 100 : 0);
+            const periodLabel = selectedMonth === 'all'
+                ? `Tahun ${selectedYear}`
+                : `${MONTH_NAMES[parseInt(selectedMonth, 10) - 1]} ${selectedYear}`;
+
+            // Update Badge Periode & 5 Stories Highlights
+            document.getElementById('active-period-badge').textContent = periodLabel;
+            document.getElementById('story-balance-short').textContent = formatShortRupiah(overallBalance);
+            document.getElementById('story-in-short').textContent = formatShortRupiah(periodIn);
+            document.getElementById('story-in-count').textContent = `${countIn} masuk`;
+            document.getElementById('story-out-short').textContent = formatShortRupiah(periodOut);
+            document.getElementById('story-out-count').textContent = `${countOut} salur`;
+            document.getElementById('story-ratio-short').textContent = `${ratio}%`;
+            document.getElementById('story-net-short').textContent = (periodNet >= 0 ? '+' : '-') + formatShortRupiah(Math.abs(periodNet));
+
+            // 3. Render Statistik atau Feed
+            const feedView = document.getElementById('feed-view');
+            const statsView = document.getElementById('stats-view');
+            const emptyState = document.getElementById('empty-state');
+
+            if (currentMainView === 'stats') {
+                feedView.classList.add('hidden');
+                emptyState.classList.add('hidden');
+                statsView.classList.remove('hidden');
+
+                document.getElementById('stats-card-in').textContent = formatRupiah(periodIn);
+                document.getElementById('stats-sub-in').textContent = `${countIn} transaksi • ${periodLabel}`;
+                document.getElementById('stats-card-out').textContent = formatRupiah(periodOut);
+                document.getElementById('stats-sub-out').textContent = `${countOut} kegiatan • ${periodLabel}`;
+                document.getElementById('chart-year-label').textContent = selectedYear;
+
+                renderMonthlyChart(selectedYear);
+                renderCategoryBreakdown(periodTransactions, periodIn, periodOut, periodLabel);
+                lucide.createIcons();
+                return;
+            }
+
+            statsView.classList.add('hidden');
+            feedView.classList.remove('hidden');
+
+            // 4. Filter Feed berdasarkan Jenis & Kata Kunci Pencarian
+            const filteredFeed = periodTransactions
+                .filter(tx => currentFeedFilter === 'all' || tx.type === currentFeedFilter)
+                .filter(tx => {
+                    if (!searchQuery) return true;
+                    return (
+                        (tx.title && tx.title.toLowerCase().includes(searchQuery)) ||
+                        (tx.description && tx.description.toLowerCase().includes(searchQuery)) ||
+                        (tx.category && tx.category.toLowerCase().includes(searchQuery))
+                    );
+                })
+                .sort((a, b) => new Date(b.tx_date) - new Date(a.tx_date));
+
+            renderSocialFeed(filteredFeed, runningBalanceMap);
+        }
+
+        function openHighlightDetail(type) {
+            if (type === 'balance') {
+                let totalIn = 0, totalOut = 0;
+                transactions.forEach(t => t.type === 'in' ? totalIn += Number(t.amount) : totalOut += Number(t.amount));
+                showToast(`Total Saldo Kas Aktif Saat Ini: ${formatRupiah(totalIn - totalOut)}`, 'info');
+            } else if (type === 'net') {
+                const selectedMonth = document.getElementById('filter-month').value;
+                const selectedYear = document.getElementById('filter-year').value;
+                let pIn = 0, pOut = 0;
+                transactions.forEach(tx => {
+                    if (tx.tx_date && tx.tx_date.startsWith(selectedYear) && (selectedMonth === 'all' || tx.tx_date.substring(5, 7) === selectedMonth)) {
+                        tx.type === 'in' ? pIn += Number(tx.amount) : pOut += Number(tx.amount);
+                    }
+                });
+                const net = pIn - pOut;
+                showToast(`Surplus/Defisit Periode Ini: ${net >= 0 ? '+' : '-'} ${formatRupiah(Math.abs(net))}`, 'info');
+            }
+        }
+
+        // --- RENDER POSTINGAN FEED ALA INSTAGRAM / THREADS ---
+        function renderSocialFeed(list, runningBalanceMap) {
+            const feedContainer = document.getElementById('feed-view');
+            const emptyState = document.getElementById('empty-state');
+
+            if (list.length === 0) {
+                feedContainer.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            const isAdmin = currentRole === 'admin';
+            const cleanHandle = appSettings.orgHandle.replace(/^@/, '');
+
+            feedContainer.innerHTML = list.map(tx => {
+                const isIn = tx.type === 'in';
+                const txKey = String(tx.id);
+                const isLiked = likedTxIds.has(txKey);
+                const aamiinCount = Number(tx.aamiin_count || 0);
+                const cardStyle = getThemeCardStyles(tx);
+                const currentSal = runningBalanceMap[tx.id] ?? 0;
+
+                const adminMenuHtml = isAdmin ? `
+                    <div class="flex items-center gap-1 no-print">
+                        <button type="button" onclick="openTransactionModal('${txKey}')" class="p-1.5 rounded-full text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Edit Postingan">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                        <button type="button" onclick="promptDeleteTransaction('${txKey}')" class="p-1.5 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Hapus Postingan">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                ` : `
+                    <span class="text-[11px] font-medium text-slate-400">${formatRelativeDate(tx.tx_date)}</span>
+                `;
+
+                return `
+                    <article class="feed-card bg-white px-4 py-4 transition-colors">
+                        <!-- 1. Post Header (Avatar + Kategori + Tanggal + Aksi) -->
+                        <div class="flex items-center justify-between gap-2.5 mb-3">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-10 h-10 rounded-full ${cardStyle.avatarBg} flex items-center justify-center shrink-0 font-bold border border-black/5">
+                                    <i data-lucide="${cardStyle.icon}" class="w-5 h-5"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-1">
+                                        <span class="font-display font-bold text-xs sm:text-sm text-slate-900 truncate">
+                                            ${escapeHtml(tx.category)}
+                                        </span>
+                                        <i data-lucide="badge-check" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500">
+                                        <span>${formatDateIndo(tx.tx_date)}</span>
+                                        <span>•</span>
+                                        <span class="font-semibold ${isIn ? 'text-emerald-600' : 'text-amber-600'}">
+                                            ${isIn ? 'Penerimaan' : 'Penyaluran'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            ${adminMenuHtml}
+                        </div>
+
+                        <!-- 2. Kartu Postingan Visual Bergradasi Cantik -->
+                        <div class="rounded-2xl ${cardStyle.gradientBg} p-5 mb-3 relative overflow-hidden text-white shadow-sm">
+                            <!-- Ornamen lingkaran dekoratif -->
+                            <div class="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-white/10 pointer-events-none"></div>
+                            <div class="absolute right-12 -top-8 w-20 h-20 rounded-full bg-white/10 pointer-events-none"></div>
+
+                            <div class="flex items-center justify-between gap-2 mb-2.5">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/20 backdrop-blur-xs text-white">
+                                    <i data-lucide="${isIn ? 'arrow-down-left' : 'arrow-up-right'}" class="w-3 h-3"></i>
+                                    ${isIn ? 'Dana Masuk' : 'Dana Tersalurkan'}
+                                </span>
+                                <span class="text-[11px] font-semibold text-white/85 truncate max-w-[55%]">
+                                    ${escapeHtml(tx.title || tx.category)}
+                                </span>
+                            </div>
+
+                            <div class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight text-white">
+                                ${isIn ? '+' : '-'} ${formatRupiah(tx.amount)}
+                            </div>
+
+                            <div class="mt-3 pt-2.5 border-t border-white/15 flex items-center justify-between text-[11px] text-white/90">
+                                <span class="flex items-center gap-1 font-medium">
+                                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                                    Terverifikasi Bendahara
+                                </span>
+                                <span class="font-mono font-semibold">
+                                    Saldo: ${formatRupiah(currentSal)}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 3. Baris Aksi Sosial (Tombol Aamiin + Bagikan ke WA) -->
+                        <div class="flex items-center justify-between mb-2.5 no-print">
+                            <div class="flex items-center gap-2.5">
+                                <button type="button" onclick="toggleAamiin('${txKey}', this)" 
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${isLiked ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-slate-100 hover:bg-slate-200/70 text-slate-700'}">
+                                    <i data-lucide="heart" class="w-4 h-4 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}"></i>
+                                    <span>Aamiin</span>
+                                    <span class="font-mono text-[11px] opacity-85">(${aamiinCount})</span>
+                                </button>
+
+                                <button type="button" onclick="sharePostDetail('${txKey}')" 
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200/70 text-slate-700 transition-colors">
+                                    <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                                    <span>Bagikan</span>
+                                </button>
+                            </div>
+
+                            <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+                                #Transparan
+                            </span>
+                        </div>
+
+                        <!-- 4. Caption Kegiatan -->
+                        <div class="text-xs sm:text-[13px] text-slate-800 leading-relaxed">
+                            <span class="font-bold text-slate-950 mr-1">${escapeHtml(cleanHandle)}</span>
+                            <span class="font-semibold text-slate-900">${escapeHtml(tx.title)}:</span>
+                            <span>${escapeHtml(tx.description)}</span>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function getThemeCardStyles(tx) {
+            const isIn = tx.type === 'in';
+            const theme = tx.theme || (isIn ? 'emerald' : 'amber');
+
+            let icon = isIn ? 'wallet' : 'hand-heart';
+            const catLower = (tx.category || '').toLowerCase();
+            if (catLower.includes('yatim')) icon = 'heart-handshake';
+            else if (catLower.includes('kesehatan')) icon = 'stethoscope';
+            else if (catLower.includes('bencana')) icon = 'life-buoy';
+            else if (catLower.includes('masjid') || catLower.includes('jumat')) icon = 'landmark';
+            else if (catLower.includes('dakwah') || catLower.includes('tpq')) icon = 'book-open';
+
+            const themes = {
+                emerald: {
+                    icon,
+                    avatarBg: 'bg-emerald-100 text-emerald-700',
+                    gradientBg: 'bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800'
+                },
+                blue: {
+                    icon,
+                    avatarBg: 'bg-blue-100 text-blue-700',
+                    gradientBg: 'bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900'
+                },
+                amber: {
+                    icon,
+                    avatarBg: 'bg-amber-100 text-amber-700',
+                    gradientBg: 'bg-gradient-to-br from-amber-500 via-orange-600 to-amber-800'
+                },
+                rose: {
+                    icon,
+                    avatarBg: 'bg-rose-100 text-rose-700',
+                    gradientBg: 'bg-gradient-to-br from-rose-600 via-pink-700 to-rose-900'
+                },
+                purple: {
+                    icon,
+                    avatarBg: 'bg-purple-100 text-purple-700',
+                    gradientBg: 'bg-gradient-to-br from-purple-600 via-violet-700 to-indigo-950'
+                }
+            };
+
+            return themes[theme] || themes.emerald;
+        }
+
+        // --- INTERAKSI SOSIAL: TOMBOL AAMIIN (REAL-TIME SUPABASE UPDATE) & BAGIKAN ---
+        async function toggleAamiin(txId, btnEl) {
+            const idx = transactions.findIndex(t => String(t.id) === String(txId));
+            if (idx === -1) return;
+
+            const txKey = String(txId);
+            const currentlyLiked = likedTxIds.has(txKey);
+            const currentCount = Number(transactions[idx].aamiin_count || 0);
+            const newCount = currentlyLiked ? Math.max(0, currentCount - 1) : currentCount + 1;
+
+            if (currentlyLiked) {
+                likedTxIds.delete(txKey);
+            } else {
+                likedTxIds.add(txKey);
+                if (btnEl) btnEl.classList.add('animate-pop');
+            }
+
+            transactions[idx].aamiin_count = newCount;
+            saveLikesToStorage();
+            saveLocalCache();
+            refreshDashboard();
+
+            // Simpan perubahan jumlah doa "Aamiin" ke Supabase jika terhubung
+            if (supabaseClient && isCloudConnected && !txKey.startsWith('local-')) {
+                try {
+                    await supabaseClient
+                        .from('infaq_transactions')
+                        .update({ aamiin_count: newCount })
+                        .eq('id', transactions[idx].id);
+                } catch (err) {
+                    console.warn('Gagal update aamiin_count ke cloud:', err);
+                }
+            }
+        }
+
+        function sharePostDetail(txId) {
+            const tx = transactions.find(t => String(t.id) === String(txId));
+            if (!tx) return;
+
+            const jenis = tx.type === 'in' ? 'PENERIMAAN INFAQ' : 'PENYALURAN INFAQ';
+            const textToCopy = `*${appSettings.orgName}*\n_${jenis} (${formatDateIndo(tx.tx_date)})_\n\n*${tx.title}*\nKategori: ${tx.category}\nNominal: *${formatRupiah(tx.amount)}*\nKeterangan: ${tx.description}\n\n_Transparansi Dana Umat • PROJECT INFAQMU_`;
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast('Rincian laporan disalin! Siap ditempel ke WhatsApp jamaah.', 'success');
+            } catch (err) {
+                showToast('Gagal menyalin rincian laporan.', 'error');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        // --- GRAFIK & STATISTIK ---
+        function renderCategoryBreakdown(periodTransactions, totalIn, totalOut, periodLabel) {
+            document.getElementById('category-period-subtitle').textContent = `Proporsi penyaluran pada ${periodLabel}`;
+            const container = document.getElementById('category-breakdown-list');
+            const ratioEl = document.getElementById('disbursement-ratio');
+
+            const ratio = totalIn > 0 ? Math.round((totalOut / totalIn) * 100) : (totalOut > 0 ? 100 : 0);
+            ratioEl.textContent = `${ratio}% Tersalurkan`;
+
+            const outMap = {};
+            periodTransactions.filter(tx => tx.type === 'out').forEach(tx => {
+                outMap[tx.category] = (outMap[tx.category] || 0) + Number(tx.amount);
+            });
+
+            const entries = Object.entries(outMap).sort((a, b) => b[1] - a[1]);
+
+            if (entries.length === 0) {
+                container.innerHTML = `
+                    <div class="py-6 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                        Belum ada penyaluran dana pada ${periodLabel}.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = entries.map(([cat, amount]) => {
+                const pct = totalOut > 0 ? Math.round((amount / totalOut) * 100) : 0;
+                return `
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-1">
+                            <span class="font-bold text-slate-700 truncate pr-2">${escapeHtml(cat)}</span>
+                            <span class="font-bold text-slate-900 shrink-0">${formatRupiah(amount)} <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-amber-500 to-emerald-600 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMonthlyChart(year) {
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            const inData = Array(12).fill(0);
+            const outData = Array(12).fill(0);
+
+            transactions.forEach(tx => {
+                if (tx.tx_date && tx.tx_date.startsWith(year)) {
+                    const monthIdx = parseInt(tx.tx_date.substring(5, 7), 10) - 1;
+                    if (monthIdx >= 0 && monthIdx < 12) {
+                        if (tx.type === 'in') inData[monthIdx] += Number(tx.amount);
+                        else outData[monthIdx] += Number(tx.amount);
+                    }
+                }
+            });
+
+            if (monthlyChartInstance) {
+                monthlyChartInstance.destroy();
+            }
+
+            monthlyChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    datasets: [
+                        {
+                            label: 'Penerimaan',
+                            data: inData,
+                            backgroundColor: '#10b981',
+                            borderRadius: 5
+                        },
+                        {
+                            label: 'Penyaluran',
+                            data: outData,
+                            backgroundColor: '#f59e0b',
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 10,
+                            cornerRadius: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${formatRupiah(context.raw)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 10 }, color: '#64748b' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            border: { display: false },
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                font: { family: 'Inter', size: 10 },
+                                color: '#64748b',
+                                callback: function(val) {
+                                    if (val >= 1000000) return (val / 1000000) + ' Jt';
+                                    if (val >= 1000) return (val / 1000) + ' Rb';
+                                    return val;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- CREATE / EDIT / DELETE POST (ADMIN -> SUPABASE / LOCAL) ---
+        function updateCategoryOptions(selectedCat = null) {
+            const type = document.querySelector('input[name="tx-type"]:checked').value;
+            const select = document.getElementById('tx-category');
+            const list = CATEGORIES[type] || [];
+
+            select.innerHTML = list.map(cat =>
+                `<option value="${cat}" ${cat === selectedCat ? 'selected' : ''}>${cat}</option>`
+            ).join('');
+        }
+
+        function openTransactionModal(editId = null) {
+            if (currentRole !== 'admin') return;
+
+            const modal = document.getElementById('transaction-modal');
+            const titleEl = document.getElementById('modal-tx-title');
+            const form = document.getElementById('transaction-form');
+            form.reset();
+
+            if (editId) {
+                const tx = transactions.find(t => String(t.id) === String(editId));
+                if (!tx) return;
+
+                titleEl.textContent = 'Edit Postingan Laporan';
+                document.getElementById('tx-id').value = tx.id;
+                document.querySelector(`input[name="tx-type"][value="${tx.type}"]`).checked = true;
+                updateCategoryOptions(tx.category);
+                document.getElementById('tx-date').value = tx.tx_date;
+                document.getElementById('tx-amount').value = tx.amount;
+                document.getElementById('tx-title').value = tx.title || '';
+                document.getElementById('tx-description').value = tx.description || '';
+                const themeRadio = document.querySelector(`input[name="tx-theme"][value="${tx.theme || 'emerald'}"]`);
+                if (themeRadio) themeRadio.checked = true;
+            } else {
+                titleEl.textContent = 'Postingan Laporan Baru';
+                document.getElementById('tx-id').value = '';
+                document.querySelector('input[name="tx-type"][value="in"]').checked = true;
+                updateCategoryOptions();
+                document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+                document.querySelector('input[name="tx-theme"][value="emerald"]').checked = true;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeTransactionModal() {
+            const modal = document.getElementById('transaction-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function handleSaveTransaction(e) {
+            e.preventDefault();
+            if (currentRole !== 'admin') return;
+
+            const id = document.getElementById('tx-id').value;
+            const type = document.querySelector('input[name="tx-type"]:checked').value;
+            const tx_date = document.getElementById('tx-date').value;
+            const category = document.getElementById('tx-category').value;
+            const amount = Number(document.getElementById('tx-amount').value);
+            const title = document.getElementById('tx-title').value.trim();
+            const description = document.getElementById('tx-description').value.trim();
+            const theme = document.querySelector('input[name="tx-theme"]:checked')?.value || 'emerald';
+
+            if (amount <= 0 || !title || !description || !tx_date) {
+                showToast('Harap lengkapi semua kolom wajib.', 'error');
+                return;
+            }
+
+            const btnSubmit = document.getElementById('btn-submit-tx');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<span>Menyimpan...</span>';
+
+            try {
+                if (supabaseClient && isCloudConnected) {
+                    if (id && !String(id).startsWith('local-')) {
+                        const { error } = await supabaseClient
+                            .from('infaq_transactions')
+                            .update({ type, category, title, description, amount, tx_date, theme })
+                            .eq('id', Number(id));
+                        if (error) throw error;
+                        showToast('Postingan berhasil diperbarui di Supabase Cloud!', 'success');
+                    } else {
+                        const { error } = await supabaseClient
+                            .from('infaq_transactions')
+                            .insert([{ type, category, title, description, amount, tx_date, theme, aamiin_count: 1 }]);
+                        if (error) throw error;
+                        showToast('Postingan baru berhasil diterbitkan ke Supabase Cloud!', 'success');
+                    }
+                    await syncInitialData(false);
+                } else {
+                    // Simpan secara lokal
+                    if (id) {
+                        const idx = transactions.findIndex(t => String(t.id) === String(id));
+                        if (idx !== -1) {
+                            transactions[idx] = { ...transactions[idx], type, category, title, description, amount, tx_date, theme };
+                        }
+                        showToast('Postingan diperbarui (Mode Lokal).', 'success');
+                    } else {
+                        transactions.push({
+                            id: 'local-' + Date.now(),
+                            type, category, title, description, amount, tx_date, theme,
+                            aamiin_count: 1
+                        });
+                        showToast('Postingan diterbitkan (Mode Lokal).', 'success');
+                    }
+                    saveLocalCache();
+                }
+
+                populateYearFilter();
+                document.getElementById('filter-year').value = tx_date.substring(0, 4);
+                document.getElementById('filter-month').value = tx_date.substring(5, 7);
+
+                closeTransactionModal();
+                if (currentMainView === 'stats') switchMainView('feed');
+                else refreshDashboard();
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal menyimpan transaksi: ' + (err.message || 'Error database'), 'error');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i><span>Terbitkan Laporan</span>';
+                lucide.createIcons();
+            }
+        }
+
+        function promptDeleteTransaction(id) {
+            if (currentRole !== 'admin') return;
+            pendingDeleteId = id;
+            const modal = document.getElementById('delete-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            document.getElementById('confirm-delete-btn').onclick = async () => {
+                const targetId = String(pendingDeleteId);
+                closeDeleteModal();
+
+                if (supabaseClient && isCloudConnected && !targetId.startsWith('local-')) {
+                    try {
+                        const { error } = await supabaseClient
+                            .from('infaq_transactions')
+                            .delete()
+                            .eq('id', Number(targetId));
+                        if (error) throw error;
+                        await syncInitialData(false);
+                        showToast('Postingan dihapus dari Supabase Cloud.', 'info');
+                    } catch (err) {
+                        showToast('Gagal menghapus data di cloud.', 'error');
+                    }
+                } else {
+                    transactions = transactions.filter(t => String(t.id) !== targetId);
+                    saveLocalCache();
+                    refreshDashboard();
+                    showToast('Postingan dihapus (Mode Lokal).', 'info');
+                }
+            };
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteId = null;
+            const modal = document.getElementById('delete-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // --- PENGATURAN ADMIN, SUPABASE & PIN 6 DIGIT ---
+        function openSecurityModal() {
+            if (currentRole !== 'admin') return;
+            document.getElementById('set-sb-url').value = sbCredentials.url || '';
+            document.getElementById('set-sb-key').value = sbCredentials.key || '';
+            document.getElementById('set-org-name').value = appSettings.orgName;
+            document.getElementById('set-org-handle').value = appSettings.orgHandle;
+            document.getElementById('set-org-bio').value = appSettings.orgBio;
+            document.getElementById('set-viewer-pin').value = appSettings.viewerPin;
+            document.getElementById('set-admin-pin').value = appSettings.adminPin;
+
+            const modal = document.getElementById('security-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSecurityModal() {
+            const modal = document.getElementById('security-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function testAndSyncSupabase() {
+            const url = document.getElementById('set-sb-url').value.trim();
+            const key = document.getElementById('set-sb-key').value.trim();
+
+            if (!url || !key) {
+                showToast('Masukkan Project URL dan Anon Public Key Supabase terlebih dahulu.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btn-test-sb');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Menguji Koneksi...</span>';
+
+            sbCredentials = { url, key };
+            localStorage.setItem(STORAGE_KEYS.SB_CONFIG, JSON.stringify(sbCredentials));
+            createSupabaseClientInstance();
+
+            const ok = await syncInitialData(true);
+            if (ok) {
+                document.getElementById('set-org-name').value = appSettings.orgName;
+                document.getElementById('set-org-handle').value = appSettings.orgHandle;
+                document.getElementById('set-org-bio').value = appSettings.orgBio;
+                document.getElementById('set-viewer-pin').value = appSettings.viewerPin;
+                document.getElementById('set-admin-pin').value = appSettings.adminPin;
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i><span>Uji & Sinkronkan Database</span>';
+            lucide.createIcons();
+        }
+
+        async function handleSaveSecuritySettings(e) {
+            e.preventDefault();
+            if (currentRole !== 'admin') return;
+
+            const url = document.getElementById('set-sb-url').value.trim();
+            const key = document.getElementById('set-sb-key').value.trim();
+            const orgName = document.getElementById('set-org-name').value.trim();
+            const orgHandle = document.getElementById('set-org-handle').value.trim().replace(/^@/, '');
+            const orgBio = document.getElementById('set-org-bio').value.trim();
+            const newViewerPin = document.getElementById('set-viewer-pin').value.trim();
+            const newAdminPin = document.getElementById('set-admin-pin').value.trim();
+
+            if (!/^\d{6}$/.test(newViewerPin) || !/^\d{6}$/.test(newAdminPin)) {
+                showToast('PIN Jamaah dan PIN Admin wajib berupa 6 digit angka!', 'error');
+                return;
+            }
+
+            if (newViewerPin === newAdminPin) {
+                showToast('PIN Jamaah dan PIN Admin harus berbeda.', 'error');
+                return;
+            }
+
+            sbCredentials = { url, key };
+            localStorage.setItem(STORAGE_KEYS.SB_CONFIG, JSON.stringify(sbCredentials));
+            createSupabaseClientInstance();
+
+            appSettings = {
+                orgName,
+                orgHandle,
+                orgBio,
+                viewerPin: newViewerPin,
+                adminPin: newAdminPin
+            };
+
+            if (supabaseClient) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('infaq_settings')
+                        .upsert({
+                            id: 1,
+                            org_name: orgName,
+                            org_handle: orgHandle,
+                            org_bio: orgBio,
+                            visitor_pin: newViewerPin,
+                            admin_pin: newAdminPin
+                        });
+                    if (error) throw error;
+                    isCloudConnected = true;
+                    updateSyncStatusUI('cloud');
+                    showToast('Pengaturan & PIN 6 digit tersimpan ke Supabase Cloud!', 'success');
+                } catch (err) {
+                    console.error(err);
+                    isCloudConnected = false;
+                    updateSyncStatusUI('local');
+                    showToast('Tersimpan lokal (Gagal mengirim pengaturan ke Supabase).', 'error');
+                }
+            } else {
+                isCloudConnected = false;
+                updateSyncStatusUI('local');
+                showToast('Pengaturan & PIN 6 digit tersimpan (Mode Lokal).', 'success');
+            }
+
+            saveLocalCache();
+            applySettingsToUI();
+            closeSecurityModal();
+        }
+
+        function resetDemoData() {
+            if (currentRole !== 'admin') return;
+            transactions = getDefaultDummyData();
+            saveLocalCache();
+            populateYearFilter();
+            document.getElementById('filter-year').value = '2026';
+            document.getElementById('filter-month').value = '11';
+            closeSecurityModal();
+            refreshDashboard();
+            showToast('Data contoh lokal berhasil dipulihkan.', 'info');
+        }
+
+        // --- PANDUAN SQL MODAL ---
+        function openSqlGuideModal() {
+            const modal = document.getElementById('sql-guide-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSqlGuideModal() {
+            const modal = document.getElementById('sql-guide-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function copySqlScript() {
+            const sqlText = document.getElementById('supabase-sql-code').textContent;
+            const temp = document.createElement('textarea');
+            temp.value = sqlText;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showToast('Skrip SQL Supabase berhasil disalin ke clipboard!', 'success');
+            } catch (e) {
+                showToast('Gagal menyalin skrip SQL.', 'error');
+            }
+            document.body.removeChild(temp);
+        }
+
+        // --- EKSPOR CSV ---
+        function exportToCSV() {
+            const selectedMonth = document.getElementById('filter-month').value;
+            const selectedYear = document.getElementById('filter-year').value;
+
+            const filtered = transactions.filter(tx => {
+                const matchYear = tx.tx_date && tx.tx_date.startsWith(selectedYear);
+                const matchMonth = selectedMonth === 'all' || (tx.tx_date && tx.tx_date.substring(5, 7) === selectedMonth);
+                return matchYear && matchMonth;
+            }).sort((a, b) => new Date(a.tx_date) - new Date(b.tx_date));
+
+            if (filtered.length === 0) {
+                showToast('Tidak ada data pada periode ini untuk diekspor.', 'error');
+                return;
+            }
+
+            const headers = ['Tanggal', 'Jenis', 'Kategori', 'Judul Kegiatan', 'Keterangan', 'Nominal (Rp)', 'Apresiasi Aamiin'];
+            const rows = filtered.map(tx => [
+                tx.tx_date,
+                tx.type === 'in' ? 'Penerimaan Dana' : 'Penyaluran Dana',
+                `"${(tx.category || '').replace(/"/g, '""')}"`,
+                `"${(tx.title || '').replace(/"/g, '""')}"`,
+                `"${(tx.description || '').replace(/"/g, '""')}"`,
+                tx.amount,
+                tx.aamiin_count || 0
+            ]);
+
+            const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const periodTag = selectedMonth === 'all' ? `Tahun_${selectedYear}` : `${MONTH_NAMES[parseInt(selectedMonth, 10) - 1]}_${selectedYear}`;
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Laporan_Infaq_${periodTag}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast('Laporan CSV berhasil diunduh.', 'success');
+        }
+
+        // --- HELPER FORMATTER ---
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(number);
+        }
+
+        function formatShortRupiah(number) {
+            const abs = Math.abs(number);
+            if (abs >= 1000000) {
+                const jt = (number / 1000000).toFixed(1).replace(/\.0$/, '');
+                return `Rp${jt}Jt`;
+            }
+            if (abs >= 1000) {
+                return `Rp${Math.round(number / 1000)}Rb`;
+            }
+            return `Rp${number}`;
+        }
+
+        function formatDateIndo(dateStr) {
+            if (!dateStr) return '-';
+            const [y, m, d] = dateStr.split('-');
+            const monthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            return `${parseInt(d, 10)} ${monthShort[parseInt(m, 10) - 1]} ${y}`;
+        }
+
+        function formatRelativeDate(dateStr) {
+            if (!dateStr) return '';
+            const today = new Date('2026-11-18');
+            const target = new Date(dateStr);
+            const diffDays = Math.floor((today - target) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 0) return 'Hari ini';
+            if (diffDays === 1) return 'Kemarin';
+            if (diffDays < 7) return `${diffDays}h lalu`;
+            return `${Math.floor(diffDays / 7)}mgg lalu`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const styles = {
+                success: 'bg-slate-900 text-white border-emerald-500/40',
+                error: 'bg-rose-950 text-white border-rose-500/40',
+                info: 'bg-slate-900 text-white border-white/15'
+            };
+
+            const icons = {
+                success: 'check-circle-2',
+                error: 'alert-circle',
+                info: 'info'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-full shadow-2xl border text-xs font-semibold transition-all duration-300 ${styles[type] || styles.info}`;
+            toast.innerHTML = `
+                <i data-lucide="${icons[type] || 'info'}" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+                <span class="leading-snug">${escapeHtml(message)}</span>
+            `;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+    </script>
+</body>
+</html>
