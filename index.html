@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT INFAQMU - Transparansi Infaq & Sedekah Cloud</title>
+    <title>INFAQMU - Transparansi Infaq & Sedekah Cloud</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Plus Jakarta Sans & Inter -->
@@ -31,7 +31,6 @@
     </script>
 
     <style>
-        /* Animasi Shake saat PIN salah */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-6px); }
@@ -41,7 +40,6 @@
             animation: shake 0.35s ease-in-out;
         }
 
-        /* Animasi Pop saat tombol Aamiin / Like diklik */
         @keyframes heartPop {
             0% { transform: scale(1); }
             40% { transform: scale(1.35); }
@@ -52,7 +50,6 @@
             animation: heartPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Sembunyikan scrollbar horizontal pada Story Highlights & Filter Pills */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -61,7 +58,6 @@
             scrollbar-width: none;
         }
 
-        /* Ring gradasi ala Instagram Stories */
         .story-ring-emerald {
             background: linear-gradient(135deg, #10b981 0%, #059669 50%, #f59e0b 100%);
         }
@@ -69,7 +65,6 @@
             background: linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #10b981 100%);
         }
 
-        /* Pengaturan khusus cetak laporan (Print / Papan Pengumuman) */
         @media print {
             body {
                 background: white !important;
@@ -96,16 +91,13 @@
 </head>
 <body class="bg-slate-100/90 text-slate-900 antialiased min-h-screen flex flex-col selection:bg-emerald-200 selection:text-emerald-950">
 
-    <!-- ===================================================================== -->
-    <!-- TOAST NOTIFIKASI MENGAMBANG                                           -->
-    <!-- ===================================================================== -->
+    <!-- TOAST NOTIFIKASI MENGAMBANG -->
     <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none w-full max-w-md px-4"></div>
 
     <!-- ===================================================================== -->
-    <!-- 1. GERBANG AKSES PIN 6 DIGIT (TERHUBUNG KE SUPABASE CLOUD)            -->
+    <!-- 1. GERBANG AKSES PIN 6 DIGIT                                          -->
     <!-- ===================================================================== -->
     <div id="access-gate" class="fixed inset-0 z-40 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 flex items-center justify-center p-4 overflow-y-auto">
-        <!-- Dekorasi cahaya latar belakang -->
         <div class="fixed top-[-10%] left-[-10%] w-80 h-80 rounded-full bg-emerald-500/20 blur-3xl pointer-events-none"></div>
         <div class="fixed bottom-[-10%] right-[-10%] w-80 h-80 rounded-full bg-amber-500/15 blur-3xl pointer-events-none"></div>
 
@@ -126,14 +118,14 @@
                     </div>
                 </div>
                 <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-bold tracking-wider uppercase mb-1">
-                    <span>PROJECT INFAQMU</span>
+                    <span>INFAQMU</span>
                     <i data-lucide="badge-check" class="w-3.5 h-3.5 text-emerald-600 fill-emerald-100"></i>
                 </div>
                 <h1 id="gate-org-name" class="font-display text-xl font-extrabold text-slate-900 leading-tight">
-                    INFAQMU
+                    InfaqMU Peduli
                 </h1>
                 <p id="gate-org-handle" class="text-xs text-slate-500 mt-0.5 font-medium">
-                    @infaqmu.peduli • Laporan Dana Umat
+                    @prm.bandarmalela • Laporan Bulanan
                 </p>
             </div>
 
@@ -205,7 +197,7 @@
                 </button>
             </form>
 
-            <!-- Quick Login Hint (Untuk Memudahkan Demo & Uji Coba) -->
+            <!-- Quick Login Hint -->
             <div class="mt-5 pt-3.5 border-t border-slate-100">
                 <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
                     <span>Akses Cepat (PIN Aktif)</span>
@@ -236,10 +228,9 @@
     <!-- ===================================================================== -->
     <div id="main-app" class="hidden flex-1 flex flex-col items-center">
         
-        <!-- Kontainer Utama Terpusat Ala Sosial Media (Max-Width 560px) -->
-        <div class="w-full max-w-[560px] bg-white min-h-screen shadow-xl shadow-slate-200/70 border-x border-slate-200/80 flex flex-col pb-24 print-expand">
+        <div class="w-full max-w-[560px] bg-white min-h-screen shadow-xl shadow-slate-200/70 border-x border-slate-200/80 flex flex-col pb-28 print-expand">
             
-            <!-- A. STICKY TOP HEADER (GLASSMORPHISM) -->
+            <!-- A. STICKY TOP HEADER -->
             <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-lg border-b border-slate-100 px-4 py-3 flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2.5 min-w-0">
                     <div class="w-9 h-9 rounded-xl story-ring-emerald p-[2px] shrink-0">
@@ -250,18 +241,17 @@
                     <div class="min-w-0">
                         <div class="flex items-center gap-1">
                             <span id="header-org-name" class="font-display font-extrabold text-sm sm:text-base tracking-tight text-slate-900 truncate">
-                                INFAQMU
+                                InfaqMU Peduli
                             </span>
                             <i data-lucide="badge-check" class="w-4 h-4 text-emerald-500 fill-emerald-50 shrink-0"></i>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <!-- Indikator Status Koneksi Cloud / Lokal -->
                             <span id="connection-status-pill" class="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/80">
                                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                 <span>Mode Lokal</span>
                             </span>
                             <span id="header-org-handle" class="text-[11px] font-medium text-slate-400 truncate">
-                                @infaqmu.peduli
+                                @prm.bandarmalela
                             </span>
                         </div>
                     </div>
@@ -273,24 +263,21 @@
                         <i data-lucide="eye" class="w-3 h-3"></i> Publik
                     </span>
 
-                    <!-- Tombol Refresh Sinkronisasi Manual -->
                     <button type="button" id="btn-manual-refresh" onclick="handleManualRefresh()" class="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors" title="Sinkronkan & Segarkan Data">
                         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                     </button>
 
-                    <!-- Tombol Pengaturan PIN & Supabase (Khusus Admin) -->
                     <button type="button" id="btn-open-security" onclick="openSecurityModal()" class="hidden p-2 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 transition-colors" title="Pengaturan PIN, Profil & Supabase">
                         <i data-lucide="settings" class="w-4 h-4"></i>
                     </button>
 
-                    <!-- Tombol Kunci / Keluar -->
                     <button type="button" onclick="lockApplication()" class="p-2 rounded-full hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors" title="Kunci Sesi / Keluar">
                         <i data-lucide="log-out" class="w-4 h-4"></i>
                     </button>
                 </div>
             </header>
 
-            <!-- Bio Singkat Profil Lembaga ala Instagram -->
+            <!-- Bio Singkat Profil Lembaga -->
             <div class="px-4 py-2.5 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between gap-2">
                 <p id="header-org-bio" class="text-[11px] text-slate-600 leading-snug line-clamp-2">
                     Laporan Transparansi Penerimaan & Penyaluran Infaq Sedekah • Terverifikasi Bendahara
@@ -300,18 +287,16 @@
                 </span>
             </div>
 
-            <!-- B. STORIES / HIGHLIGHTS ROW (RINGKASAN SALDO & STATISTIK) -->
+            <!-- B. STORIES / HIGHLIGHTS ROW -->
             <section class="px-4 pt-3.5 pb-3 border-b border-slate-100 bg-white">
                 <div class="flex items-center justify-between mb-2.5">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Sorotan Kas Umat</span>
                     <span id="active-period-badge" class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        November 2026
+                        Oktober 2026
                     </span>
                 </div>
 
-                <!-- Horizontal Scrollable Highlights (5 Lingkaran) -->
                 <div class="flex items-stretch justify-between sm:justify-start gap-2.5 sm:gap-3.5 overflow-x-auto no-scrollbar pb-1">
-                    
                     <!-- Highlight 1: Total Saldo Kas -->
                     <button type="button" onclick="openHighlightDetail('balance')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
                         <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full story-ring-emerald p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
@@ -324,7 +309,7 @@
                         <span class="text-[10px] text-slate-400">Kas Aktif</span>
                     </button>
 
-                    <!-- Highlight 2: Penerimaan Bulan Ini -->
+                    <!-- Highlight 2: Penerimaan -->
                     <button type="button" onclick="setFeedFilter('in')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
                         <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full story-ring-emerald p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
                             <div class="w-full h-full rounded-full bg-emerald-50 flex flex-col items-center justify-center text-emerald-800 p-1">
@@ -336,7 +321,7 @@
                         <span id="story-in-count" class="text-[10px] text-emerald-600 font-medium">0 masuk</span>
                     </button>
 
-                    <!-- Highlight 3: Penyaluran Bulan Ini -->
+                    <!-- Highlight 3: Penyaluran -->
                     <button type="button" onclick="setFeedFilter('out')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
                         <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full story-ring-amber p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
                             <div class="w-full h-full rounded-full bg-amber-50 flex flex-col items-center justify-center text-amber-800 p-1">
@@ -348,7 +333,19 @@
                         <span id="story-out-count" class="text-[10px] text-amber-600 font-medium">0 salur</span>
                     </button>
 
-                    <!-- Highlight 4: Persentase Tersalurkan -->
+                    <!-- Highlight 4: Rekap WA Cepat -->
+                    <button type="button" onclick="switchMainView('wa')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
+                        <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full story-ring-emerald p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform shadow-sm">
+                            <div class="w-full h-full rounded-full bg-teal-50 flex flex-col items-center justify-center text-teal-800 p-1">
+                                <i data-lucide="message-square-text" class="w-4 h-4 sm:w-5 sm:h-5 text-teal-600 mb-0.5"></i>
+                                <span class="font-display font-bold text-[10px] leading-none text-teal-800">Format WA</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1">Rekap WA</span>
+                        <span class="text-[10px] text-teal-600 font-medium">Siap Share</span>
+                    </button>
+
+                    <!-- Highlight 5: Persentase Tersalurkan -->
                     <button type="button" onclick="switchMainView('stats')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
                         <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full bg-slate-200 p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform">
                             <div class="w-full h-full rounded-full bg-white flex flex-col items-center justify-center text-slate-800 p-1">
@@ -359,25 +356,11 @@
                         <span class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1">Tersalurkan</span>
                         <span class="text-[10px] text-slate-400">Rasio Dana</span>
                     </button>
-
-                    <!-- Highlight 5: Surplus / Defisit Bulan Ini -->
-                    <button type="button" onclick="openHighlightDetail('net')" class="flex flex-col items-center shrink-0 w-[82px] group text-center">
-                        <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full bg-slate-200 p-[2.5px] mb-1.5 group-hover:scale-105 transition-transform">
-                            <div class="w-full h-full rounded-full bg-slate-50 flex flex-col items-center justify-center text-slate-800 p-1">
-                                <i data-lucide="scale" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 mb-0.5"></i>
-                                <span id="story-net-short" class="font-display font-bold text-[10px] leading-none">Rp 0</span>
-                            </div>
-                        </div>
-                        <span class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1">Surplus/Def</span>
-                        <span class="text-[10px] text-slate-400">Arus Bersih</span>
-                    </button>
-
                 </div>
             </section>
 
             <!-- C. FILTER BAR BULAN & TAHUN + PILL FILTER JENIS -->
             <section class="px-4 py-3 bg-white border-b border-slate-100 space-y-2.5 sticky top-[61px] z-20 no-print">
-                <!-- Baris 1: Pemilih Bulan & Tahun + Pencarian -->
                 <div class="flex items-center gap-2">
                     <div class="relative flex-1">
                         <select id="filter-month" onchange="refreshDashboard()" class="w-full appearance-none pl-3 pr-8 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 text-xs font-bold text-slate-800 outline-none cursor-pointer transition-colors">
@@ -400,7 +383,6 @@
 
                     <div class="relative w-28">
                         <select id="filter-year" onchange="refreshDashboard()" class="w-full appearance-none pl-3 pr-7 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 text-xs font-bold text-slate-800 outline-none cursor-pointer transition-colors">
-                            <!-- Diisi dinamis JS -->
                         </select>
                         <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                     </div>
@@ -422,7 +404,7 @@
                     </div>
                 </div>
 
-                <!-- Baris 2: Pill Filter Jenis Postingan (Saat di View Feed) -->
+                <!-- Pill Filter Jenis Postingan (Saat di View Feed) -->
                 <div id="feed-filter-pills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                     <button type="button" onclick="setFeedFilter('all')" id="pill-filter-all" 
                         class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white shrink-0 transition-all">
@@ -441,7 +423,6 @@
 
             <!-- D. KONTEN UTAMA 1: FEED LAPORAN -->
             <main id="feed-view" class="flex-1 divide-y divide-slate-100">
-                <!-- Kartu Postingan Feed diisi dinamis oleh JavaScript -->
             </main>
 
             <!-- Tampilan Jika Feed Kosong -->
@@ -455,9 +436,164 @@
                 </p>
             </div>
 
-            <!-- E. KONTEN UTAMA 2: TAB STATISTIK & REKAP -->
+            <!-- E. KONTEN UTAMA 2: FORM INPUT & GENERATOR LAPORAN WHATSAPP -->
+            <section id="wa-view" class="hidden p-4 space-y-5">
+                <!-- Banner Info -->
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 text-white shadow-md">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[10px] font-bold uppercase tracking-wider mb-1.5">
+                                <i data-lucide="message-circle" class="w-3 h-3"></i>
+                                <span>Format Resmi Grup WhatsApp</span>
+                            </div>
+                            <h2 class="font-display font-extrabold text-base sm:text-lg leading-snug">
+                                Laporan Bulanan Siap Share WA
+                            </h2>
+                            <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                                Rincian penerimaan kaleng infaq, saldo bulan lalu, serta daftar belanja barang terhitung otomatis & siap dibagikan ke jamaah.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM INPUT RINCIAN LAPORAN (KHUSUS ADMIN) -->
+                <div id="wa-admin-editor-box" class="hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-display font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                            <i data-lucide="edit-3" class="w-4 h-4 text-emerald-600"></i>
+                            <span>Form Input Rincian Laporan Bulanan</span>
+                        </h3>
+                        <button type="button" onclick="loadOctoberSampleTemplate()" class="text-[11px] font-bold text-emerald-700 hover:underline">
+                            Muat Contoh Okt 2026
+                        </button>
+                    </div>
+
+                    <!-- 1. Periode Bulan & Tahun Laporan -->
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                        <div class="text-xs font-bold text-slate-800">1. Periode Laporan</div>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Bulan Laporan</label>
+                                <select id="wa-input-month" onchange="onWaPeriodSelectChange()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 outline-none focus:border-emerald-600">
+                                    <option value="01">Januari</option>
+                                    <option value="02">Februari</option>
+                                    <option value="03">Maret</option>
+                                    <option value="04">April</option>
+                                    <option value="05">Mei</option>
+                                    <option value="06">Juni</option>
+                                    <option value="07">Juli</option>
+                                    <option value="08">Agustus</option>
+                                    <option value="09">September</option>
+                                    <option value="10" selected>Oktober</option>
+                                    <option value="11">November</option>
+                                    <option value="12">Desember</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tahun</label>
+                                <input type="number" id="wa-input-year" value="2026" min="2020" max="2099" oninput="onWaPeriodSelectChange()" 
+                                    class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 outline-none focus:border-emerald-600">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Input Penerimaan & Sisa Saldo Bulan Lalu -->
+                    <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                                <i data-lucide="arrow-down-left" class="w-4 h-4 text-emerald-600"></i>
+                                <span>2. Rincian #Penerimaan</span>
+                            </span>
+                            <button type="button" onclick="addWaIncomeRow()" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold flex items-center gap-1 transition-colors">
+                                <i data-lucide="plus" class="w-3 h-3"></i> Tambah Item
+                            </button>
+                        </div>
+
+                        <!-- Daftar Baris Penerimaan (Bisa Penjumlahan Bertingkat spt 686.500 + 807.500 + 612.500) -->
+                        <div id="wa-income-rows-container" class="space-y-2.5">
+                        </div>
+
+                        <!-- Sisa Saldo Bulan Lalu -->
+                        <div class="pt-2 border-t border-emerald-200/70 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-emerald-900 mb-1">Keterangan Saldo Sebelumnya</label>
+                                <input type="text" id="wa-prev-label" value="Sisa saldo bulan September" oninput="updateWaLivePreview()" 
+                                    class="w-full px-3 py-2 rounded-xl border border-emerald-200 bg-white text-xs font-medium outline-none focus:border-emerald-600">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-emerald-900 mb-1">Nominal Sisa Saldo (Rp)</label>
+                                <input type="number" id="wa-prev-amount" value="12500" min="0" step="100" oninput="updateWaLivePreview()" 
+                                    class="w-full px-3 py-2 rounded-xl border border-emerald-200 bg-white text-xs font-bold text-emerald-950 outline-none focus:border-emerald-600">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Input Pengeluaran (Belanja Barang: Qty x Satuan x Harga) -->
+                    <div class="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/80 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                                <i data-lucide="shopping-bag" class="w-4 h-4 text-amber-600"></i>
+                                <span>3. Rincian #Pengeluaran</span>
+                            </span>
+                            <button type="button" onclick="addWaExpenseRow()" class="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold flex items-center gap-1 transition-colors">
+                                <i data-lucide="plus" class="w-3 h-3"></i> Tambah Barang
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-amber-900 mb-1">Judul Kelompok Pengeluaran</label>
+                            <input type="text" id="wa-expense-group-title" value="Belanja sembako" oninput="updateWaLivePreview()" 
+                                class="w-full px-3 py-2 rounded-xl border border-amber-200 bg-white text-xs font-semibold outline-none focus:border-amber-600">
+                        </div>
+
+                        <!-- Daftar Item Barang -->
+                        <div id="wa-expense-rows-container" class="space-y-2.5">
+                        </div>
+                    </div>
+
+                    <!-- Tombol Simpan & Terbitkan ke Feed Utama + Cloud -->
+                    <button type="button" id="btn-publish-wa-to-feed" onclick="saveAndPublishWaReport()" 
+                        class="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Simpan Laporan & Terbitkan ke Feed</span>
+                    </button>
+                </div>
+
+                <!-- PRATINJAU PESAN WHATSAPP REAL-TIME (DILIHAT ADMIN & JAMAAH) -->
+                <div class="space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <i data-lucide="eye" class="w-4 h-4 text-teal-600"></i>
+                            <span>Pratinjau Teks WhatsApp</span>
+                        </span>
+                        <span id="wa-preview-period-tag" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
+                            Oktober 2026
+                        </span>
+                    </div>
+
+                    <!-- Bubble Chat Ala WhatsApp -->
+                    <div class="p-4 sm:p-5 rounded-2xl bg-[#e7ffdb] border border-emerald-300/80 shadow-xs relative">
+                        <pre id="wa-generated-text" class="whitespace-pre-wrap font-mono text-[12px] sm:text-[13px] text-slate-900 leading-relaxed select-all"></pre>
+                    </div>
+
+                    <!-- Tombol Aksi Utama: Salin Teks & Kirim Langsung ke WhatsApp -->
+                    <div class="grid grid-cols-2 gap-2.5 pt-1">
+                        <button type="button" onclick="copyWaReportText()" 
+                            class="py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95">
+                            <i data-lucide="copy" class="w-4 h-4 text-emerald-400"></i>
+                            <span>Salin Teks WA</span>
+                        </button>
+                        <button type="button" onclick="shareDirectToWhatsApp()" 
+                            class="py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5d] text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Kirim ke WhatsApp</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- F. KONTEN UTAMA 3: TAB STATISTIK & REKAP -->
             <section id="stats-view" class="hidden p-4 space-y-5">
-                <!-- Kartu Ringkasan Angka Lengkap -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/70">
                         <div class="flex items-center gap-1.5 text-emerald-700 text-xs font-bold mb-1">
@@ -507,7 +643,6 @@
                         </span>
                     </div>
                     <div id="category-breakdown-list" class="space-y-3">
-                        <!-- Diisi dinamis JS -->
                     </div>
                 </div>
 
@@ -526,40 +661,45 @@
 
             <!-- Footer Pengesahan Print -->
             <footer class="px-4 py-6 text-center text-[11px] text-slate-400 border-t border-slate-100 mt-auto">
-                <p class="font-semibold text-slate-600">PROJECT INFAQMU • Transparansi & Amanah</p>
+                <p class="font-semibold text-slate-600">INFAQMU • Transparansi & Amanah</p>
                 <p class="mt-0.5">Dicetak / Diakses pada <span id="current-date-display"></span></p>
             </footer>
         </div>
 
         <!-- ===================================================================== -->
-        <!-- BOTTOM FLOATING NAVIGATION BAR (GLASSMORPHISM ALA INSTAGRAM)          -->
+        <!-- BOTTOM FLOATING NAVIGATION BAR (4 MENU: FEED, +, REKAP WA, STATISTIK) -->
         <!-- ===================================================================== -->
-        <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[440px] bg-slate-950/90 backdrop-blur-xl text-white rounded-full px-4 py-2 shadow-2xl shadow-slate-950/30 border border-white/15 flex items-center justify-around no-print">
+        <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-1.5rem)] max-w-[480px] bg-slate-950/90 backdrop-blur-xl text-white rounded-full px-3 py-2 shadow-2xl shadow-slate-950/30 border border-white/15 flex items-center justify-around no-print">
             <!-- Tab 1: Feed Laporan -->
-            <button type="button" onclick="switchMainView('feed'); window.scrollTo({top:0, behavior:'smooth'})" id="nav-btn-feed" class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 text-emerald-400 font-bold text-xs transition-all">
+            <button type="button" onclick="switchMainView('feed'); window.scrollTo({top:0, behavior:'smooth'})" id="nav-btn-feed" class="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/15 text-emerald-400 font-bold text-xs transition-all">
                 <i data-lucide="layout-grid" class="w-4 h-4"></i>
-                <span>Feed Laporan</span>
+                <span>Feed</span>
             </button>
 
-            <!-- Tombol Tengah: Buat Postingan Laporan Baru (Khusus Admin) -->
-            <button type="button" id="fab-create-post" onclick="openTransactionModal()" class="hidden items-center justify-center w-12 h-12 -my-1 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all shrink-0" title="Terbitkan Laporan Baru">
-                <i data-lucide="plus" class="w-6 h-6 stroke-[2.5]"></i>
+            <!-- Tombol Tengah: Buat Postingan Laporan Satuan (Khusus Admin) -->
+            <button type="button" id="fab-create-post" onclick="openTransactionModal()" class="hidden items-center justify-center w-11 h-11 -my-1 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all shrink-0" title="Tambah Postingan Satuan">
+                <i data-lucide="plus" class="w-5 h-5 stroke-[2.5]"></i>
             </button>
 
-            <!-- Tab 2: Statistik & Rekap -->
-            <button type="button" onclick="switchMainView('stats'); window.scrollTo({top:0, behavior:'smooth'})" id="nav-btn-stats" class="flex items-center gap-2 px-3.5 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all">
+            <!-- Tab 2: Rekap & Form Laporan WhatsApp -->
+            <button type="button" onclick="switchMainView('wa'); window.scrollTo({top:0, behavior:'smooth'})" id="nav-btn-wa" class="flex items-center gap-1.5 px-3 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all">
+                <i data-lucide="message-square-text" class="w-4 h-4"></i>
+                <span>Rekap WA</span>
+            </button>
+
+            <!-- Tab 3: Statistik & Rekap -->
+            <button type="button" onclick="switchMainView('stats'); window.scrollTo({top:0, behavior:'smooth'})" id="nav-btn-stats" class="flex items-center gap-1.5 px-3 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all">
                 <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-                <span>Statistik & Rekap</span>
+                <span>Statistik</span>
             </button>
         </nav>
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 1: CREATE / EDIT POST LAPORAN (ADMIN -> SUPABASE / LOCAL)       -->
+    <!-- MODAL 1: CREATE / EDIT POST LAPORAN SATUAN (ADMIN)                    -->
     <!-- ===================================================================== -->
     <div id="transaction-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-[500px] w-full p-5 sm:p-6 my-auto border border-slate-100 max-h-[92vh] overflow-y-auto">
-            <!-- Header Modal -->
             <div class="flex items-center justify-between pb-3.5 border-b border-slate-100">
                 <button type="button" onclick="closeTransactionModal()" class="text-xs font-semibold text-slate-500 hover:text-slate-800 px-2 py-1">
                     Batal
@@ -575,7 +715,6 @@
             <form id="transaction-form" onsubmit="handleSaveTransaction(event)" class="space-y-4 mt-4">
                 <input type="hidden" id="tx-id">
 
-                <!-- Pilih Jenis Postingan (Pemasukan vs Penyaluran) -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <label class="cursor-pointer">
                         <input type="radio" name="tx-type" value="in" checked onchange="updateCategoryOptions()" class="peer sr-only">
@@ -593,7 +732,6 @@
                     </label>
                 </div>
 
-                <!-- Nominal Besar -->
                 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <label for="tx-amount" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nominal Dana (Rupiah) *</label>
                     <div class="flex items-center gap-1.5">
@@ -603,37 +741,31 @@
                     </div>
                 </div>
 
-                <!-- Judul Singkat Kegiatan -->
                 <div>
                     <label for="tx-title" class="block text-xs font-bold text-slate-700 mb-1">Judul Postingan Kegiatan *</label>
-                    <input type="text" id="tx-title" required placeholder="Contoh: Santunan 30 Anak Yatim Binaan" 
+                    <input type="text" id="tx-title" required placeholder="Contoh: Kaleng Infaqmu Bulan Oktober" 
                         class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:border-emerald-600 outline-none">
                 </div>
 
-                <!-- Deskripsi Lengkap -->
                 <div>
                     <label for="tx-description" class="block text-xs font-bold text-slate-700 mb-1">Rincian / Caption Lengkap *</label>
-                    <textarea id="tx-description" rows="2" required placeholder="Tulis rincian penerimaan atau penyaluran dana secara transparan untuk jamaah..." 
+                    <textarea id="tx-description" rows="3" required placeholder="Tulis rincian penerimaan atau penyaluran dana secara transparan..." 
                         class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:border-emerald-600 outline-none resize-none"></textarea>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Tanggal -->
                     <div>
                         <label for="tx-date" class="block text-xs font-bold text-slate-700 mb-1">Tanggal Transaksi *</label>
                         <input type="date" id="tx-date" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-emerald-600 outline-none">
                     </div>
 
-                    <!-- Kategori -->
                     <div>
                         <label for="tx-category" class="block text-xs font-bold text-slate-700 mb-1">Kategori Program *</label>
                         <select id="tx-category" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold focus:border-emerald-600 outline-none">
-                            <!-- Diisi dinamis JS -->
                         </select>
                     </div>
                 </div>
 
-                <!-- Pilihan 5 Tema Kartu Warna (Emerald, Blue, Amber, Rose, Purple) -->
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Tema Warna Kartu Postingan</label>
                     <div class="grid grid-cols-5 gap-2">
@@ -730,12 +862,12 @@
                 <div class="space-y-2.5">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
-                            <label for="set-org-name" class="block text-xs font-bold text-slate-700 mb-1">Nama Organisasi / Masjid</label>
+                            <label for="set-org-name" class="block text-xs font-bold text-slate-700 mb-1">Nama Organisasi / Lembaga</label>
                             <input type="text" id="set-org-name" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-emerald-600 outline-none">
                         </div>
                         <div>
                             <label for="set-org-handle" class="block text-xs font-bold text-slate-700 mb-1">Username / Handle</label>
-                            <input type="text" id="set-org-handle" required placeholder="infaqmu.peduli" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-emerald-600 outline-none">
+                            <input type="text" id="set-org-handle" required placeholder="prm.bandarmalela" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-emerald-600 outline-none">
                         </div>
                     </div>
                     <div>
@@ -778,7 +910,7 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 3: PANDUAN SETUP SQL SUPABASE (DENGAN TOMBOL SALIN CEPAT)        -->
+    <!-- MODAL 3: PANDUAN SETUP SQL SUPABASE                                   -->
     <!-- ===================================================================== -->
     <div id="sql-guide-modal" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-3xl shadow-2xl max-w-[540px] w-full p-5 sm:p-6 my-auto border border-slate-100 max-h-[90vh] overflow-y-auto">
@@ -816,8 +948,8 @@ CREATE TABLE IF NOT EXISTS infaq_settings (
 INSERT INTO infaq_settings (id, org_name, org_handle, org_bio, visitor_pin, admin_pin)
 VALUES (
   1,
-  'INFAQMU',
-  'infaqmu.peduli',
+  'InfaqMU Peduli',
+  'prm.bandarmalela',
   'Laporan Transparansi Penerimaan & Penyaluran Infaq Sedekah • Terverifikasi Bendahara',
   '112233',
   '999999'
@@ -847,8 +979,6 @@ CREATE POLICY "Public Access Settings" ON infaq_settings FOR ALL USING (true) WI
 DROP POLICY IF EXISTS "Public Access Transactions" ON infaq_transactions;
 CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (true) WITH CHECK (true);</pre>
                 </div>
-
-                <p>3. Setelah berhasil, buka <strong>Project Settings &rarr; API</strong> di Supabase, lalu salin <strong>Project URL</strong> dan <strong>anon public key</strong> ke form pengaturan admin.</p>
             </div>
 
             <button type="button" onclick="closeSqlGuideModal()" class="w-full mt-4 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">
@@ -858,7 +988,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 4: KONFIRMASI HAPUS POSTINGAN (PENGGANTI CONFIRM())              -->
+    <!-- MODAL 4: KONFIRMASI HAPUS POSTINGAN                                   -->
     <!-- ===================================================================== -->
     <div id="delete-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl max-w-xs w-full p-6 text-center border border-slate-100">
@@ -881,41 +1011,37 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
     </div>
 
     <!-- ===================================================================== -->
-    <!-- LOGIKA JAVASCRIPT APLIKASI + INTEGRASI SUPABASE CLOUD                 -->
+    <!-- LOGIKA JAVASCRIPT APLIKASI + INTEGRASI SUPABASE + GENERATOR REKAP WA  -->
     <!-- ===================================================================== -->
     <script>
-        // =====================================================================
-        // KONFIGURASI PERMANEN SUPABASE (OPSIONAL UNTUK DEPLOY NETLIFY)
-        // Tempelkan Project URL dan Anon Public Key Anda di bawah ini sebelum
-        // mengunggah index.html ke Netlify agar semua jamaah langsung terhubung
-        // ke database secara otomatis tanpa perlu mengatur ulang di perangkatnya.
-        // =====================================================================
+        // Tempelkan Project URL dan Anon Public Key Supabase Anda di sini sebelum upload ke Netlify
         const DEFAULT_SUPABASE_URL = "";
         const DEFAULT_SUPABASE_KEY = "";
 
         const STORAGE_KEYS = {
-            SB_CONFIG: 'infaqmu_supabase_creds_v3',
-            SETTINGS: 'infaqmu_local_settings_v3',
-            TRANSACTIONS: 'infaqmu_local_transactions_v3',
-            LIKED_IDS: 'infaqmu_local_liked_v3'
+            SB_CONFIG: 'infaqmu_supabase_creds_v4',
+            SETTINGS: 'infaqmu_local_settings_v4',
+            TRANSACTIONS: 'infaqmu_local_transactions_v4',
+            LIKED_IDS: 'infaqmu_local_liked_v4',
+            WA_REPORTS: 'infaqmu_wa_reports_v4'
         };
 
         const CATEGORIES = {
             in: [
+                'Kaleng Infaqmu',
+                'Sisa Saldo Bulan Lalu',
                 'Kotak Amal Jumat',
                 'Donatur Tetap Bulanan',
                 'Transfer Rekening Infaq',
-                'Infaq Hamba Allah',
-                'Infaq Majelis Taklim',
-                'Penerimaan Lainnya'
+                'Infaq Hamba Allah'
             ],
             out: [
+                'Belanja Sembako',
                 'Santunan Anak Yatim & Piatu',
                 'Bantuan Fakir Miskin & Dhuafa',
                 'Bantuan Kesehatan & Pengobatan',
                 'Bantuan Tanggap Bencana',
-                'Operasional Dakwah & TPQ',
-                'Pemeliharaan Sarana Masjid'
+                'Operasional Dakwah & TPQ'
             ]
         };
 
@@ -930,86 +1056,86 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
         let sbCredentials = { url: '', key: '' };
 
         let appSettings = {
-            orgName: 'INFAQMU',
-            orgHandle: 'infaqmu.peduli',
+            orgName: 'InfaqMU Peduli',
+            orgHandle: 'prm.bandarmalela',
             orgBio: 'Laporan Transparansi Penerimaan & Penyaluran Infaq Sedekah • Terverifikasi Bendahara',
             viewerPin: '112233',
             adminPin: '999999'
         };
 
         let transactions = [];
+        let waReportsStore = {}; // Key: "YYYY-MM", Value: struktur form laporan WA
         let likedTxIds = new Set();
         let currentRole = null; // 'viewer' | 'admin'
         let selectedGateRole = 'viewer';
-        let currentMainView = 'feed'; // 'feed' | 'stats'
+        let currentMainView = 'feed'; // 'feed' | 'wa' | 'stats'
         let currentFeedFilter = 'all'; // 'all' | 'in' | 'out'
         let monthlyChartInstance = null;
         let pendingDeleteId = null;
 
-        // --- DATA DUMMY DEFAULT (UNTUK MODE LOKAL ATAU DATABASE BARU) ---
+        // State Editor Form Laporan WA Aktif
+        let waFormState = {
+            month: '10',
+            year: '2026',
+            incomes: [
+                { name: 'Kaleng Infaqmu', breakdown: '686.500 + 807.500 + 612.500' }
+            ],
+            prevLabel: 'Sisa saldo bulan September',
+            prevAmount: 12500,
+            expenseGroupTitle: 'Belanja sembako',
+            expenses: [
+                { name: 'Beras Horas', qty: 19, unit: 'sak', price: 74000 },
+                { name: 'Minyakita', qty: 19, unit: 'bks', price: 16500 },
+                { name: 'Telur', qty: 190, unit: 'butir', price: 1650 }
+            ]
+        };
+
+        // --- DATA DUMMY DEFAULT ---
         function getDefaultDummyData() {
             return [
                 {
-                    id: 'local-101', tx_date: '2026-09-04', type: 'in', category: 'Kotak Amal Jumat',
-                    title: 'Kotak Amal Shalat Jumat Pekan 1',
-                    description: 'Alhamdulillah, perolehan Kotak Amal Shalat Jumat Pekan Pertama September telah dihitung bersama 3 saksi pengurus takmir.',
-                    amount: 4250000, theme: 'emerald', aamiin_count: 24
+                    id: 'local-1001',
+                    tx_date: '2026-10-25',
+                    type: 'in',
+                    category: 'Kaleng Infaqmu',
+                    title: 'Kaleng Infaqmu & Sisa Saldo Sept 2026',
+                    description: 'Kaleng Infaqmu = 686.500 + 807.500 + 612.500 = 2.106.500. Ditambah sisa saldo bulan September = Rp 12.500,- (Total Penerimaan Oktober: Rp 2.119.000,-).',
+                    amount: 2119000,
+                    theme: 'emerald',
+                    aamiin_count: 54
                 },
                 {
-                    id: 'local-102', tx_date: '2026-09-15', type: 'out', category: 'Santunan Anak Yatim & Piatu',
-                    title: 'Santunan Pendidikan 25 Anak Yatim',
-                    description: 'Penyaluran santunan pendidikan dan uang saku bulanan untuk 25 adik-adik yatim binaan wilayah RW 01 - RW 05.',
-                    amount: 5000000, theme: 'amber', aamiin_count: 48
-                },
-                {
-                    id: 'local-201', tx_date: '2026-10-08', type: 'in', category: 'Donatur Tetap Bulanan',
-                    title: 'Infaq Rutin 18 Muhsinin Oktober',
-                    description: 'Titipan infaq rutin dari 18 Donatur Tetap Program Peduli Umat bulan Oktober via rekening syariah yayasan.',
-                    amount: 7100000, theme: 'blue', aamiin_count: 31
-                },
-                {
-                    id: 'local-202', tx_date: '2026-10-19', type: 'out', category: 'Bantuan Kesehatan & Pengobatan',
-                    title: 'Bantuan Operasi Katarak Bapak Sulaeman',
-                    description: 'Bantuan biaya operasi katarak dan obat-obatan rawat jalan untuk Bapak Sulaeman (warga dhuafa). Semoga Allah berikan kesembuhan.',
-                    amount: 3750000, theme: 'rose', aamiin_count: 62
-                },
-                {
-                    id: 'local-301', tx_date: '2026-11-01', type: 'in', category: 'Transfer Rekening Infaq',
-                    title: 'Infaq Awal Bulan via QRIS & Transfer',
-                    description: 'Penerimaan infaq awal bulan dari para muhsinin melalui transfer rekening resmi & QRIS Masjid Al-Ikhlas.',
-                    amount: 5850000, theme: 'emerald', aamiin_count: 37
-                },
-                {
-                    id: 'local-302', tx_date: '2026-11-06', type: 'in', category: 'Kotak Amal Jumat',
-                    title: 'Perolehan Kotak Amal Jumat Pekan 1 Nov',
-                    description: 'Perolehan infaq Kotak Amal Jumat Pekan 1 November. Jazakumullahu khairan katsiran kepada seluruh jamaah.',
-                    amount: 4950000, theme: 'blue', aamiin_count: 41
-                },
-                {
-                    id: 'local-303', tx_date: '2026-11-09', type: 'out', category: 'Santunan Anak Yatim & Piatu',
-                    title: 'Paket Perlengkapan Sekolah & Santunan',
-                    description: 'Penyaluran paket perlengkapan sekolah & santunan tunai bagi 30 anak yatim piatu binaan yayasan.',
-                    amount: 4500000, theme: 'purple', aamiin_count: 79
-                },
-                {
-                    id: 'local-304', tx_date: '2026-11-12', type: 'in', category: 'Infaq Majelis Taklim',
-                    title: 'Kencleng Kajian Rutin Ahad Pagi',
-                    description: 'Kencleng infaq jamaah kajian rutin Ahad pagi bersama Ustadz H. Ridwan.',
-                    amount: 2350000, theme: 'emerald', aamiin_count: 29
-                },
-                {
-                    id: 'local-305', tx_date: '2026-11-15', type: 'out', category: 'Bantuan Tanggap Bencana',
-                    title: 'Distribusi Logistik & Air Bersih Banjir',
-                    description: 'Distribusi bantuan logistik makanan siap saji, selimut, dan air bersih untuk saudara kita yang terdampak banjir.',
-                    amount: 3000000, theme: 'rose', aamiin_count: 94
-                },
-                {
-                    id: 'local-306', tx_date: '2026-11-17', type: 'out', category: 'Bantuan Fakir Miskin & Dhuafa',
-                    title: '25 Paket Sembako Lansia Dhuafa',
-                    description: 'Penyaluran 25 paket sembako beras premium & minyak goreng untuk lansia dhuafa di sekitar lingkungan masjid.',
-                    amount: 2150000, theme: 'amber', aamiin_count: 65
+                    id: 'local-1002',
+                    tx_date: '2026-10-28',
+                    type: 'out',
+                    category: 'Belanja Sembako',
+                    title: 'Belanja Sembako Penyaluran Oktober 2026',
+                    description: 'Rincian Belanja Sembako: Beras Horas 19 sak x 74.000 = 1.406.000,- | Minyakita 19 bks x 16.500 = 313.500,- | Telur 190 butir x 1.650 = 313.500,- (Total Pengeluaran: Rp 2.033.000,-).',
+                    amount: 2033000,
+                    theme: 'amber',
+                    aamiin_count: 82
                 }
             ];
+        }
+
+        function getDefaultWaReports() {
+            return {
+                '2026-10': {
+                    month: '10',
+                    year: '2026',
+                    incomes: [
+                        { name: 'Kaleng Infaqmu', breakdown: '686.500 + 807.500 + 612.500' }
+                    ],
+                    prevLabel: 'Sisa saldo bulan September',
+                    prevAmount: 12500,
+                    expenseGroupTitle: 'Belanja sembako',
+                    expenses: [
+                        { name: 'Beras Horas', qty: 19, unit: 'sak', price: 74000 },
+                        { name: 'Minyakita', qty: 19, unit: 'bks', price: 16500 },
+                        { name: 'Telur', qty: 190, unit: 'butir', price: 1650 }
+                    ]
+                }
+            };
         }
 
         // --- INISIALISASI HALAMAN ---
@@ -1024,8 +1150,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             });
 
             lucide.createIcons();
-
-            // Cek dan sinkronkan dengan Supabase sebelum user memasukkan PIN
             await syncInitialData(false);
 
             const firstPinBox = document.querySelector('.pin-box');
@@ -1040,7 +1164,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                 if (raw) savedCreds = JSON.parse(raw);
             } catch (e) {}
 
-            // Prioritaskan konfigurasi yang tersimpan di localStorage, lalu konstanta DEFAULT
             const url = (savedCreds && savedCreds.url) ? savedCreds.url.trim() : DEFAULT_SUPABASE_URL.trim();
             const key = (savedCreds && savedCreds.key) ? savedCreds.key.trim() : DEFAULT_SUPABASE_KEY.trim();
 
@@ -1076,12 +1199,21 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                     localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
                 }
 
+                const savedWa = localStorage.getItem(STORAGE_KEYS.WA_REPORTS);
+                if (savedWa) {
+                    waReportsStore = JSON.parse(savedWa);
+                } else {
+                    waReportsStore = getDefaultWaReports();
+                    localStorage.setItem(STORAGE_KEYS.WA_REPORTS, JSON.stringify(waReportsStore));
+                }
+
                 const savedLikes = localStorage.getItem(STORAGE_KEYS.LIKED_IDS);
                 if (savedLikes) {
                     likedTxIds = new Set(JSON.parse(savedLikes));
                 }
             } catch (e) {
                 transactions = getDefaultDummyData();
+                waReportsStore = getDefaultWaReports();
             }
 
             applySettingsToUI();
@@ -1091,6 +1223,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             try {
                 localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(appSettings));
                 localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
+                localStorage.setItem(STORAGE_KEYS.WA_REPORTS, JSON.stringify(waReportsStore));
             } catch (e) {}
         }
 
@@ -1100,7 +1233,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             } catch (e) {}
         }
 
-        // --- SINKRONISASI DATA AWAL & MANUAL DENGAN SUPABASE ---
+        // --- SINKRONISASI DATA DENGAN SUPABASE ---
         async function syncInitialData(showNotification = false) {
             updateSyncStatusUI('syncing');
 
@@ -1115,7 +1248,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             }
 
             try {
-                // 1. Ambil pengaturan & PIN dari tabel infaq_settings (id = 1)
                 const { data: settingsData, error: settingsError } = await supabaseClient
                     .from('infaq_settings')
                     .select('*')
@@ -1133,7 +1265,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                         adminPin: String(settingsData.admin_pin || appSettings.adminPin)
                     };
                 } else {
-                    // Jika tabel kosong, sisipkan pengaturan default
                     await supabaseClient.from('infaq_settings').upsert({
                         id: 1,
                         org_name: appSettings.orgName,
@@ -1144,7 +1275,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                     });
                 }
 
-                // 2. Ambil daftar transaksi dari tabel infaq_transactions
                 const { data: txData, error: txError } = await supabaseClient
                     .from('infaq_transactions')
                     .select('*')
@@ -1230,7 +1360,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
         function applySettingsToUI() {
             const cleanHandle = appSettings.orgHandle.replace(/^@/, '');
             document.getElementById('gate-org-name').textContent = appSettings.orgName;
-            document.getElementById('gate-org-handle').textContent = `@${cleanHandle} • Laporan Dana Umat`;
+            document.getElementById('gate-org-handle').textContent = `@${cleanHandle} • Laporan Bulanan`;
             document.getElementById('header-org-name').textContent = appSettings.orgName;
             document.getElementById('header-org-handle').textContent = `@${cleanHandle}`;
             document.getElementById('header-org-bio').textContent = appSettings.orgBio;
@@ -1246,7 +1376,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             setTimeout(() => btn.classList.remove('animate-spin'), 400);
         }
 
-        // --- GERBANG AKSES PIN 6 DIGIT & KEYPAD INTERAKTIF ---
+        // --- GERBANG AKSES PIN 6 DIGIT ---
         function switchGateRole(role) {
             selectedGateRole = role;
             const tabViewer = document.getElementById('tab-role-viewer');
@@ -1407,6 +1537,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             const roleBadgeMobile = document.getElementById('role-badge-mobile');
             const btnSecurity = document.getElementById('btn-open-security');
             const fabCreate = document.getElementById('fab-create-post');
+            const waAdminEditor = document.getElementById('wa-admin-editor-box');
 
             if (role === 'admin') {
                 roleBadge.className = 'hidden sm:inline-flex px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-bold items-center gap-1 mr-0.5';
@@ -1416,6 +1547,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                 btnSecurity.classList.remove('hidden');
                 fabCreate.classList.remove('hidden');
                 fabCreate.classList.add('flex');
+                waAdminEditor.classList.remove('hidden');
                 showToast('Selamat datang, Admin! Mode kelola laporan & PIN aktif.', 'success');
             } else {
                 roleBadge.className = 'hidden sm:inline-flex px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[11px] font-bold items-center gap-1 mr-0.5';
@@ -1425,11 +1557,13 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                 btnSecurity.classList.add('hidden');
                 fabCreate.classList.add('hidden');
                 fabCreate.classList.remove('flex');
+                waAdminEditor.classList.add('hidden');
                 showToast('Akses diizinkan. Selamat melihat laporan transparansi.', 'success');
             }
 
             populateYearFilter();
-            document.getElementById('filter-month').value = '11';
+            document.getElementById('filter-month').value = '10';
+            initWaEditorFromState();
             switchMainView('feed');
             lucide.createIcons();
         }
@@ -1475,17 +1609,25 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
         function switchMainView(view) {
             currentMainView = view;
             const navFeed = document.getElementById('nav-btn-feed');
+            const navWa = document.getElementById('nav-btn-wa');
             const navStats = document.getElementById('nav-btn-stats');
             const filterPills = document.getElementById('feed-filter-pills');
 
+            const activeClass = 'flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/15 text-emerald-400 font-bold text-xs transition-all';
+            const inactiveClass = 'flex items-center gap-1.5 px-3 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all';
+
+            navFeed.className = view === 'feed' ? activeClass : inactiveClass;
+            navWa.className = view === 'wa' ? activeClass : inactiveClass;
+            navStats.className = view === 'stats' ? activeClass : inactiveClass;
+
             if (view === 'feed') {
-                navFeed.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/15 text-emerald-400 font-bold text-xs transition-all';
-                navStats.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all';
                 filterPills.classList.remove('hidden');
             } else {
-                navStats.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/15 text-emerald-400 font-bold text-xs transition-all';
-                navFeed.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-slate-400 hover:text-white font-semibold text-xs transition-all';
                 filterPills.classList.add('hidden');
+            }
+
+            if (view === 'wa') {
+                syncWaViewWithTopFilter();
             }
 
             refreshDashboard();
@@ -1552,13 +1694,12 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                 }
             });
 
-            const periodNet = periodIn - periodOut;
             const ratio = periodIn > 0 ? Math.round((periodOut / periodIn) * 100) : (periodOut > 0 ? 100 : 0);
             const periodLabel = selectedMonth === 'all'
                 ? `Tahun ${selectedYear}`
                 : `${MONTH_NAMES[parseInt(selectedMonth, 10) - 1]} ${selectedYear}`;
 
-            // Update Badge Periode & 5 Stories Highlights
+            // Update Badge Periode & Stories Highlights
             document.getElementById('active-period-badge').textContent = periodLabel;
             document.getElementById('story-balance-short').textContent = formatShortRupiah(overallBalance);
             document.getElementById('story-in-short').textContent = formatShortRupiah(periodIn);
@@ -1566,18 +1707,31 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             document.getElementById('story-out-short').textContent = formatShortRupiah(periodOut);
             document.getElementById('story-out-count').textContent = `${countOut} salur`;
             document.getElementById('story-ratio-short').textContent = `${ratio}%`;
-            document.getElementById('story-net-short').textContent = (periodNet >= 0 ? '+' : '-') + formatShortRupiah(Math.abs(periodNet));
 
-            // 3. Render Statistik atau Feed
+            // 3. Tampilkan View Aktif
             const feedView = document.getElementById('feed-view');
+            const waView = document.getElementById('wa-view');
             const statsView = document.getElementById('stats-view');
             const emptyState = document.getElementById('empty-state');
 
-            if (currentMainView === 'stats') {
-                feedView.classList.add('hidden');
-                emptyState.classList.add('hidden');
-                statsView.classList.remove('hidden');
+            feedView.classList.add('hidden');
+            waView.classList.add('hidden');
+            statsView.classList.add('hidden');
+            emptyState.classList.add('hidden');
 
+            if (currentMainView === 'wa') {
+                waView.classList.remove('hidden');
+                if (selectedMonth !== 'all' && (waFormState.month !== selectedMonth || waFormState.year !== selectedYear)) {
+                    loadWaReportForPeriod(selectedYear, selectedMonth);
+                } else {
+                    updateWaLivePreview();
+                }
+                lucide.createIcons();
+                return;
+            }
+
+            if (currentMainView === 'stats') {
+                statsView.classList.remove('hidden');
                 document.getElementById('stats-card-in').textContent = formatRupiah(periodIn);
                 document.getElementById('stats-sub-in').textContent = `${countIn} transaksi • ${periodLabel}`;
                 document.getElementById('stats-card-out').textContent = formatRupiah(periodOut);
@@ -1590,10 +1744,8 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                 return;
             }
 
-            statsView.classList.add('hidden');
             feedView.classList.remove('hidden');
 
-            // 4. Filter Feed berdasarkan Jenis & Kata Kunci Pencarian
             const filteredFeed = periodTransactions
                 .filter(tx => currentFeedFilter === 'all' || tx.type === currentFeedFilter)
                 .filter(tx => {
@@ -1614,18 +1766,387 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                 let totalIn = 0, totalOut = 0;
                 transactions.forEach(t => t.type === 'in' ? totalIn += Number(t.amount) : totalOut += Number(t.amount));
                 showToast(`Total Saldo Kas Aktif Saat Ini: ${formatRupiah(totalIn - totalOut)}`, 'info');
-            } else if (type === 'net') {
-                const selectedMonth = document.getElementById('filter-month').value;
-                const selectedYear = document.getElementById('filter-year').value;
-                let pIn = 0, pOut = 0;
-                transactions.forEach(tx => {
-                    if (tx.tx_date && tx.tx_date.startsWith(selectedYear) && (selectedMonth === 'all' || tx.tx_date.substring(5, 7) === selectedMonth)) {
-                        tx.type === 'in' ? pIn += Number(tx.amount) : pOut += Number(tx.amount);
-                    }
-                });
-                const net = pIn - pOut;
-                showToast(`Surplus/Defisit Periode Ini: ${net >= 0 ? '+' : '-'} ${formatRupiah(Math.abs(net))}`, 'info');
             }
+        }
+
+        // =====================================================================
+        // FORM INPUT & GENERATOR LAPORAN WHATSAPP (FORMAT RESMI INFAQMU)
+        // =====================================================================
+        function syncWaViewWithTopFilter() {
+            const topMonth = document.getElementById('filter-month').value;
+            const topYear = document.getElementById('filter-year').value;
+            const targetMonth = topMonth === 'all' ? '10' : topMonth;
+            loadWaReportForPeriod(topYear, targetMonth);
+        }
+
+        function loadWaReportForPeriod(year, month) {
+            const key = `${year}-${month}`;
+            if (waReportsStore[key]) {
+                waFormState = JSON.parse(JSON.stringify(waReportsStore[key]));
+            } else {
+                const prevMonthIdx = parseInt(month, 10) - 2;
+                const prevMonthName = prevMonthIdx >= 0 ? MONTH_NAMES[prevMonthIdx] : 'Desember';
+                waFormState = {
+                    month: month,
+                    year: year,
+                    incomes: [
+                        { name: 'Kaleng Infaqmu', breakdown: '0' }
+                    ],
+                    prevLabel: `Sisa saldo bulan ${prevMonthName}`,
+                    prevAmount: 0,
+                    expenseGroupTitle: 'Belanja sembako',
+                    expenses: [
+                        { name: 'Beras', qty: 1, unit: 'sak', price: 0 }
+                    ]
+                };
+            }
+            initWaEditorFromState();
+        }
+
+        function onWaPeriodSelectChange() {
+            const m = document.getElementById('wa-input-month').value;
+            const y = document.getElementById('wa-input-year').value || '2026';
+            document.getElementById('filter-month').value = m;
+            if (Array.from(document.getElementById('filter-year').options).some(o => o.value === y)) {
+                document.getElementById('filter-year').value = y;
+            }
+            loadWaReportForPeriod(y, m);
+            refreshDashboard();
+        }
+
+        function loadOctoberSampleTemplate() {
+            waFormState = getDefaultWaReports()['2026-10'];
+            document.getElementById('filter-month').value = '10';
+            document.getElementById('filter-year').value = '2026';
+            initWaEditorFromState();
+            refreshDashboard();
+            showToast('Contoh laporan bulan Oktober 2026 berhasil dimuat.', 'info');
+        }
+
+        function initWaEditorFromState() {
+            document.getElementById('wa-input-month').value = waFormState.month;
+            document.getElementById('wa-input-year').value = waFormState.year;
+            document.getElementById('wa-prev-label').value = waFormState.prevLabel;
+            document.getElementById('wa-prev-amount').value = waFormState.prevAmount;
+            document.getElementById('wa-expense-group-title').value = waFormState.expenseGroupTitle;
+
+            renderWaIncomeRows();
+            renderWaExpenseRows();
+            updateWaLivePreview();
+        }
+
+        function renderWaIncomeRows() {
+            const container = document.getElementById('wa-income-rows-container');
+            container.innerHTML = waFormState.incomes.map((item, idx) => `
+                <div class="p-2.5 rounded-xl bg-white border border-emerald-200/80 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" value="${escapeHtml(item.name)}" oninput="updateWaIncomeField(${idx}, 'name', this.value)" 
+                            placeholder="Nama pos (mis: Kaleng Infaqmu)" 
+                            class="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold outline-none focus:border-emerald-600">
+                        ${waFormState.incomes.length > 1 ? `
+                            <button type="button" onclick="removeWaIncomeRow(${idx})" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50" title="Hapus baris">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-medium text-slate-500 mb-0.5">Rincian Nominal (bisa dijumlahkan dengan tanda +)</label>
+                        <input type="text" value="${escapeHtml(item.breakdown)}" oninput="updateWaIncomeField(${idx}, 'breakdown', this.value)" 
+                            placeholder="Contoh: 686.500 + 807.500 + 612.500" 
+                            class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 font-mono text-xs text-emerald-900 font-bold outline-none focus:border-emerald-600">
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function addWaIncomeRow() {
+            waFormState.incomes.push({ name: 'Donatur / Kotak Infaq', breakdown: '0' });
+            renderWaIncomeRows();
+            updateWaLivePreview();
+        }
+
+        function removeWaIncomeRow(idx) {
+            waFormState.incomes.splice(idx, 1);
+            renderWaIncomeRows();
+            updateWaLivePreview();
+        }
+
+        function updateWaIncomeField(idx, field, val) {
+            if (!waFormState.incomes[idx]) return;
+            waFormState.incomes[idx][field] = val;
+            updateWaLivePreview();
+        }
+
+        function renderWaExpenseRows() {
+            const container = document.getElementById('wa-expense-rows-container');
+            container.innerHTML = waFormState.expenses.map((item, idx) => `
+                <div class="p-2.5 rounded-xl bg-white border border-amber-200/80 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" value="${escapeHtml(item.name)}" oninput="updateWaExpenseField(${idx}, 'name', this.value)" 
+                            placeholder="Nama barang (mis: Beras Horas)" 
+                            class="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold outline-none focus:border-amber-600">
+                        ${waFormState.expenses.length > 1 ? `
+                            <button type="button" onclick="removeWaExpenseRow(${idx})" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50" title="Hapus barang">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <div>
+                            <label class="block text-[10px] text-slate-500">Jumlah</label>
+                            <input type="number" value="${item.qty}" min="0" step="any" oninput="updateWaExpenseField(${idx}, 'qty', this.value)" 
+                                class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs font-bold outline-none focus:border-amber-600">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500">Satuan</label>
+                            <input type="text" value="${escapeHtml(item.unit)}" oninput="updateWaExpenseField(${idx}, 'unit', this.value)" 
+                                placeholder="sak/bks/butir" 
+                                class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-amber-600">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500">Harga Satuan</label>
+                            <input type="number" value="${item.price}" min="0" step="50" oninput="updateWaExpenseField(${idx}, 'price', this.value)" 
+                                class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-amber-950 outline-none focus:border-amber-600">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function addWaExpenseRow() {
+            waFormState.expenses.push({ name: 'Item Belanja Baru', qty: 1, unit: 'pcs', price: 0 });
+            renderWaExpenseRows();
+            updateWaLivePreview();
+        }
+
+        function removeWaExpenseRow(idx) {
+            waFormState.expenses.splice(idx, 1);
+            renderWaExpenseRows();
+            updateWaLivePreview();
+        }
+
+        function updateWaExpenseField(idx, field, val) {
+            if (!waFormState.expenses[idx]) return;
+            if (field === 'qty' || field === 'price') {
+                waFormState.expenses[idx][field] = Number(val) || 0;
+            } else {
+                waFormState.expenses[idx][field] = val;
+            }
+            updateWaLivePreview();
+        }
+
+        function parseSumExpression(exprStr) {
+            if (!exprStr) return { parts: [], total: 0 };
+            const rawParts = String(exprStr).split('+').map(s => s.trim()).filter(Boolean);
+            const numericParts = rawParts.map(p => {
+                const digitsOnly = p.replace(/[^0-9]/g, '');
+                return Number(digitsOnly) || 0;
+            });
+            const total = numericParts.reduce((acc, n) => acc + n, 0);
+            return { parts: numericParts, total };
+        }
+
+        function formatIndoDots(num) {
+            return new Intl.NumberFormat('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(Number(num) || 0);
+        }
+
+        function buildWaReportCalculationAndText() {
+            if (currentRole === 'admin') {
+                waFormState.month = document.getElementById('wa-input-month').value;
+                waFormState.year = document.getElementById('wa-input-year').value || '2026';
+                waFormState.prevLabel = document.getElementById('wa-prev-label').value.trim() || 'Sisa saldo bulan sebelumnya';
+                waFormState.prevAmount = Number(document.getElementById('wa-prev-amount').value) || 0;
+                waFormState.expenseGroupTitle = document.getElementById('wa-expense-group-title').value.trim() || 'Belanja sembako';
+            }
+
+            const monthName = MONTH_NAMES[parseInt(waFormState.month, 10) - 1] || 'Oktober';
+            const monthUpper = monthName.toUpperCase();
+            const yearStr = waFormState.year;
+
+            // Hitung Penerimaan
+            let totalNewIncome = 0;
+            const incomeLines = waFormState.incomes.map(item => {
+                const { parts, total } = parseSumExpression(item.breakdown);
+                totalNewIncome += total;
+                if (parts.length > 1) {
+                    const exprFormatted = parts.map(p => formatIndoDots(p)).join(' + ');
+                    return `- ${item.name} = ${exprFormatted} = ${formatIndoDots(total)}.`;
+                } else {
+                    return `- ${item.name} = ${formatIndoDots(total)}.`;
+                }
+            });
+
+            const prevAmt = Number(waFormState.prevAmount) || 0;
+            const totalIncomeAll = totalNewIncome + prevAmt;
+
+            // Hitung Pengeluaran
+            let totalExpenseAll = 0;
+            const expenseLines = waFormState.expenses.map(item => {
+                const qty = Number(item.qty) || 0;
+                const price = Number(item.price) || 0;
+                const subtotal = Math.round(qty * price);
+                totalExpenseAll += subtotal;
+                const unitStr = item.unit ? ` ${item.unit}` : '';
+                return `- ${item.name} ${qty}${unitStr} x ${formatIndoDots(price)} = ${formatIndoDots(subtotal)},-`;
+            });
+
+            const endingBalance = totalIncomeAll - totalExpenseAll;
+
+            const waText = [
+                `Assalamu'alaikum warohmatullahi wabarokatuh`,
+                ``,
+                `*LAPORAN INFAQMU BULAN ${monthUpper} ${yearStr}*`,
+                `======================================`,
+                `#Penerimaan :`,
+                ...incomeLines,
+                `- ${waFormState.prevLabel} = ${formatIndoDots(prevAmt)},-`,
+                `Total penerimaan = Rp. ${formatIndoDots(totalIncomeAll)},-`,
+                ``,
+                `#Pengeluaran :`,
+                `- ${waFormState.expenseGroupTitle} :`,
+                ...expenseLines,
+                `Total pengeluaran = Rp. ${formatIndoDots(totalExpenseAll)},- `,
+                ``,
+                `Saldo Infaqmu bulan ${monthName}= ${formatIndoDots(totalIncomeAll)} - ${formatIndoDots(totalExpenseAll)} = Rp. ${formatIndoDots(endingBalance)},-`,
+                ``,
+                `_Wassalamu'alaikum warohmatullahi wabarokatuh._ 🙏`
+            ].join('\n');
+
+            return {
+                monthName,
+                yearStr,
+                totalNewIncome,
+                prevAmt,
+                totalIncomeAll,
+                totalExpenseAll,
+                endingBalance,
+                incomeLines,
+                expenseLines,
+                waText
+            };
+        }
+
+        function updateWaLivePreview() {
+            const calc = buildWaReportCalculationAndText();
+            document.getElementById('wa-preview-period-tag').textContent = `${calc.monthName} ${calc.yearStr}`;
+            document.getElementById('wa-generated-text').textContent = calc.waText;
+        }
+
+        async function saveAndPublishWaReport() {
+            if (currentRole !== 'admin') return;
+
+            const calc = buildWaReportCalculationAndText();
+            const periodKey = `${waFormState.year}-${waFormState.month}`;
+            waReportsStore[periodKey] = JSON.parse(JSON.stringify(waFormState));
+            saveLocalCache();
+
+            const btn = document.getElementById('btn-publish-wa-to-feed');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Menyimpan & Menerbitkan...</span>';
+
+            const txDateStr = `${waFormState.year}-${waFormState.month}-25`;
+            const incomeTitle = `Penerimaan Infaq Bulan ${calc.monthName} ${calc.yearStr}`;
+            const incomeDesc = `${calc.incomeLines.join(' ')} ${waFormState.prevLabel} = Rp ${formatIndoDots(calc.prevAmt)},- (Total Penerimaan: Rp ${formatIndoDots(calc.totalIncomeAll)},-).`;
+
+            const expenseTitle = `${waFormState.expenseGroupTitle} (${calc.monthName} ${calc.yearStr})`;
+            const expenseDesc = `Rincian ${waFormState.expenseGroupTitle}: ${calc.expenseLines.join(' ')} (Total Pengeluaran: Rp ${formatIndoDots(calc.totalExpenseAll)},- | Saldo Akhir: Rp ${formatIndoDots(calc.endingBalance)},-).`;
+
+            try {
+                if (supabaseClient && isCloudConnected) {
+                    const { error } = await supabaseClient
+                        .from('infaq_transactions')
+                        .insert([
+                            {
+                                type: 'in',
+                                category: waFormState.incomes[0]?.name || 'Kaleng Infaqmu',
+                                title: incomeTitle,
+                                description: incomeDesc,
+                                amount: calc.totalIncomeAll,
+                                tx_date: txDateStr,
+                                theme: 'emerald',
+                                aamiin_count: 1
+                            },
+                            {
+                                type: 'out',
+                                category: waFormState.expenseGroupTitle || 'Belanja Sembako',
+                                title: expenseTitle,
+                                description: expenseDesc,
+                                amount: calc.totalExpenseAll,
+                                tx_date: txDateStr,
+                                theme: 'amber',
+                                aamiin_count: 1
+                            }
+                        ]);
+                    if (error) throw error;
+                    await syncInitialData(false);
+                    showToast(`Laporan ${calc.monthName} ${calc.yearStr} berhasil diterbitkan ke Feed & Supabase Cloud!`, 'success');
+                } else {
+                    transactions.push(
+                        {
+                            id: 'local-wa-in-' + Date.now(),
+                            type: 'in',
+                            category: waFormState.incomes[0]?.name || 'Kaleng Infaqmu',
+                            title: incomeTitle,
+                            description: incomeDesc,
+                            amount: calc.totalIncomeAll,
+                            tx_date: txDateStr,
+                            theme: 'emerald',
+                            aamiin_count: 1
+                        },
+                        {
+                            id: 'local-wa-out-' + (Date.now() + 1),
+                            type: 'out',
+                            category: waFormState.expenseGroupTitle || 'Belanja Sembako',
+                            title: expenseTitle,
+                            description: expenseDesc,
+                            amount: calc.totalExpenseAll,
+                            tx_date: txDateStr,
+                            theme: 'amber',
+                            aamiin_count: 1
+                        }
+                    );
+                    saveLocalCache();
+                    populateYearFilter();
+                    showToast(`Laporan ${calc.monthName} ${calc.yearStr} berhasil diterbitkan ke Feed!`, 'success');
+                }
+
+                document.getElementById('filter-year').value = waFormState.year;
+                document.getElementById('filter-month').value = waFormState.month;
+                refreshDashboard();
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal menerbitkan laporan: ' + (err.message || 'Error'), 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i><span>Simpan Laporan & Terbitkan ke Feed</span>';
+                lucide.createIcons();
+            }
+        }
+
+        function copyWaReportText() {
+            const text = document.getElementById('wa-generated-text').textContent;
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showToast('Teks laporan WhatsApp berhasil disalin!', 'success');
+            } catch (e) {
+                showToast('Gagal menyalin teks laporan.', 'error');
+            }
+            document.body.removeChild(temp);
+        }
+
+        function shareDirectToWhatsApp() {
+            const text = document.getElementById('wa-generated-text').textContent;
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(waUrl, '_blank');
         }
 
         // --- RENDER POSTINGAN FEED ALA INSTAGRAM / THREADS ---
@@ -1667,7 +2188,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
 
                 return `
                     <article class="feed-card bg-white px-4 py-4 transition-colors">
-                        <!-- 1. Post Header (Avatar + Kategori + Tanggal + Aksi) -->
                         <div class="flex items-center justify-between gap-2.5 mb-3">
                             <div class="flex items-center gap-2.5 min-w-0">
                                 <div class="w-10 h-10 rounded-full ${cardStyle.avatarBg} flex items-center justify-center shrink-0 font-bold border border-black/5">
@@ -1692,9 +2212,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                             ${adminMenuHtml}
                         </div>
 
-                        <!-- 2. Kartu Postingan Visual Bergradasi Cantik -->
                         <div class="rounded-2xl ${cardStyle.gradientBg} p-5 mb-3 relative overflow-hidden text-white shadow-sm">
-                            <!-- Ornamen lingkaran dekoratif -->
                             <div class="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-white/10 pointer-events-none"></div>
                             <div class="absolute right-12 -top-8 w-20 h-20 rounded-full bg-white/10 pointer-events-none"></div>
 
@@ -1723,7 +2241,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                             </div>
                         </div>
 
-                        <!-- 3. Baris Aksi Sosial (Tombol Aamiin + Bagikan ke WA) -->
                         <div class="flex items-center justify-between mb-2.5 no-print">
                             <div class="flex items-center gap-2.5">
                                 <button type="button" onclick="toggleAamiin('${txKey}', this)" 
@@ -1745,7 +2262,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                             </span>
                         </div>
 
-                        <!-- 4. Caption Kegiatan -->
                         <div class="text-xs sm:text-[13px] text-slate-800 leading-relaxed">
                             <span class="font-bold text-slate-950 mr-1">${escapeHtml(cleanHandle)}</span>
                             <span class="font-semibold text-slate-900">${escapeHtml(tx.title)}:</span>
@@ -1767,41 +2283,20 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             if (catLower.includes('yatim')) icon = 'heart-handshake';
             else if (catLower.includes('kesehatan')) icon = 'stethoscope';
             else if (catLower.includes('bencana')) icon = 'life-buoy';
+            else if (catLower.includes('sembako')) icon = 'shopping-bag';
             else if (catLower.includes('masjid') || catLower.includes('jumat')) icon = 'landmark';
-            else if (catLower.includes('dakwah') || catLower.includes('tpq')) icon = 'book-open';
 
             const themes = {
-                emerald: {
-                    icon,
-                    avatarBg: 'bg-emerald-100 text-emerald-700',
-                    gradientBg: 'bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800'
-                },
-                blue: {
-                    icon,
-                    avatarBg: 'bg-blue-100 text-blue-700',
-                    gradientBg: 'bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900'
-                },
-                amber: {
-                    icon,
-                    avatarBg: 'bg-amber-100 text-amber-700',
-                    gradientBg: 'bg-gradient-to-br from-amber-500 via-orange-600 to-amber-800'
-                },
-                rose: {
-                    icon,
-                    avatarBg: 'bg-rose-100 text-rose-700',
-                    gradientBg: 'bg-gradient-to-br from-rose-600 via-pink-700 to-rose-900'
-                },
-                purple: {
-                    icon,
-                    avatarBg: 'bg-purple-100 text-purple-700',
-                    gradientBg: 'bg-gradient-to-br from-purple-600 via-violet-700 to-indigo-950'
-                }
+                emerald: { icon, avatarBg: 'bg-emerald-100 text-emerald-700', gradientBg: 'bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800' },
+                blue: { icon, avatarBg: 'bg-blue-100 text-blue-700', gradientBg: 'bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900' },
+                amber: { icon, avatarBg: 'bg-amber-100 text-amber-700', gradientBg: 'bg-gradient-to-br from-amber-500 via-orange-600 to-amber-800' },
+                rose: { icon, avatarBg: 'bg-rose-100 text-rose-700', gradientBg: 'bg-gradient-to-br from-rose-600 via-pink-700 to-rose-900' },
+                purple: { icon, avatarBg: 'bg-purple-100 text-purple-700', gradientBg: 'bg-gradient-to-br from-purple-600 via-violet-700 to-indigo-950' }
             };
 
             return themes[theme] || themes.emerald;
         }
 
-        // --- INTERAKSI SOSIAL: TOMBOL AAMIIN (REAL-TIME SUPABASE UPDATE) & BAGIKAN ---
         async function toggleAamiin(txId, btnEl) {
             const idx = transactions.findIndex(t => String(t.id) === String(txId));
             if (idx === -1) return;
@@ -1823,7 +2318,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             saveLocalCache();
             refreshDashboard();
 
-            // Simpan perubahan jumlah doa "Aamiin" ke Supabase jika terhubung
             if (supabaseClient && isCloudConnected && !txKey.startsWith('local-')) {
                 try {
                     await supabaseClient
@@ -1841,7 +2335,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             if (!tx) return;
 
             const jenis = tx.type === 'in' ? 'PENERIMAAN INFAQ' : 'PENYALURAN INFAQ';
-            const textToCopy = `*${appSettings.orgName}*\n_${jenis} (${formatDateIndo(tx.tx_date)})_\n\n*${tx.title}*\nKategori: ${tx.category}\nNominal: *${formatRupiah(tx.amount)}*\nKeterangan: ${tx.description}\n\n_Transparansi Dana Umat • PROJECT INFAQMU_`;
+            const textToCopy = `*${appSettings.orgName}*\n_${jenis} (${formatDateIndo(tx.tx_date)})_\n\n*${tx.title}*\nKategori: ${tx.category}\nNominal: *${formatRupiah(tx.amount)}*\nKeterangan: ${tx.description}\n\n_Transparansi Dana Umat • INFAQMU_`;
 
             const tempInput = document.createElement('textarea');
             tempInput.value = textToCopy;
@@ -1921,18 +2415,8 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                     datasets: [
-                        {
-                            label: 'Penerimaan',
-                            data: inData,
-                            backgroundColor: '#10b981',
-                            borderRadius: 5
-                        },
-                        {
-                            label: 'Penyaluran',
-                            data: outData,
-                            backgroundColor: '#f59e0b',
-                            borderRadius: 5
-                        }
+                        { label: 'Penerimaan', data: inData, backgroundColor: '#10b981', borderRadius: 5 },
+                        { label: 'Penyaluran', data: outData, backgroundColor: '#f59e0b', borderRadius: 5 }
                     ]
                 },
                 options: {
@@ -1952,10 +2436,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                         }
                     },
                     scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { family: 'Inter', size: 10 }, color: '#64748b' }
-                        },
+                        x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#64748b' } },
                         y: {
                             beginAtZero: true,
                             border: { display: false },
@@ -1975,7 +2456,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
             });
         }
 
-        // --- CREATE / EDIT / DELETE POST (ADMIN -> SUPABASE / LOCAL) ---
+        // --- CREATE / EDIT / DELETE POST SATUAN ---
         function updateCategoryOptions(selectedCat = null) {
             const type = document.querySelector('input[name="tx-type"]:checked').value;
             const select = document.getElementById('tx-category');
@@ -2067,7 +2548,6 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                     }
                     await syncInitialData(false);
                 } else {
-                    // Simpan secara lokal
                     if (id) {
                         const idx = transactions.findIndex(t => String(t.id) === String(id));
                         if (idx !== -1) {
@@ -2090,7 +2570,7 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
                 document.getElementById('filter-month').value = tx_date.substring(5, 7);
 
                 closeTransactionModal();
-                if (currentMainView === 'stats') switchMainView('feed');
+                if (currentMainView !== 'feed') switchMainView('feed');
                 else refreshDashboard();
             } catch (err) {
                 console.error(err);
@@ -2264,13 +2744,15 @@ CREATE POLICY "Public Access Transactions" ON infaq_transactions FOR ALL USING (
         function resetDemoData() {
             if (currentRole !== 'admin') return;
             transactions = getDefaultDummyData();
+            waReportsStore = getDefaultWaReports();
             saveLocalCache();
             populateYearFilter();
             document.getElementById('filter-year').value = '2026';
-            document.getElementById('filter-month').value = '11';
+            document.getElementById('filter-month').value = '10';
+            loadWaReportForPeriod('2026', '10');
             closeSecurityModal();
             refreshDashboard();
-            showToast('Data contoh lokal berhasil dipulihkan.', 'info');
+            showToast('Data contoh bulan Oktober 2026 berhasil dipulihkan.', 'info');
         }
 
         // --- PANDUAN SQL MODAL ---
