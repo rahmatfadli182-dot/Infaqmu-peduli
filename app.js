@@ -1,5 +1,5 @@
 // =====================================================================
-// LOGIKA UTAMA APLIKASI INFAQMU (app.js) - CHECKPOINT 1 STABLE
+// LOGIKA UTAMA APLIKASI INFAQMU (app.js) - FIXED SYNTAX
 // =====================================================================
 
 let supabaseClient = null;
@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const firstPinBox = document.querySelector('.pin-box');
         if (firstPinBox) firstPinBox.focus();
 
-        // Sinkronisasi latar belakang non-blocking (timeout 4 detik)
         setTimeout(() => {
             syncInitialData(false).catch(() => {});
         }, 150);
@@ -122,7 +121,7 @@ function formatMoneyInputOnBlur(inputEl) {
     updateWaLivePreview();
 }
 
-// --- KONEKSI SUPABASE (SDK + POSTGREST NATIVE FETCH DENGAN TIMEOUT) ---
+// --- KONEKSI SUPABASE ---
 function isJwtFormat(token) {
     return typeof token === 'string' && token.split('.').length === 3 && token.startsWith('eyJ');
 }
@@ -308,7 +307,7 @@ function deduplicateMonthlyLedgerRecords() {
     transactions = cleaned;
 }
 
-// --- PERHITUNGAN SALDO KAS AKURAT (ANTI DOUBLE-COUNTING) ---
+// --- PERHITUNGAN SALDO KAS AKURAT ---
 function extractCarryOverAndPureIncome(tx) {
     const amount = Number(tx.amount) || 0;
     if (tx.type !== 'in') return { pureIn: 0, carryOver: 0 };
@@ -572,7 +571,6 @@ function refreshDashboard() {
 
     const ledger = computeAccurateCashLedger();
 
-    // Update Metrik Profil & Story Highlights
     const newsPostsAll = transactions.filter(t => t.type === 'news');
     document.getElementById('profile-stat-posts').textContent = newsPostsAll.length;
     document.getElementById('profile-stat-balance').textContent = formatShortRupiah(ledger.overallBalance);
@@ -609,7 +607,6 @@ function refreshDashboard() {
         return;
     }
 
-    // Filter khusus Postingan Berita & Kegiatan
     const filteredNews = newsPostsAll
         .filter(tx => {
             if (!tx.tx_date) return false;
@@ -682,7 +679,6 @@ function renderInstagramFeed(list) {
                     ${adminActions}
                 </div>
 
-                <!-- Poster Visual Ala Instagram dengan Double-Tap Heart -->
                 <div ondblclick="handleDoubleTapPoster('${txKey}', this)" class="rounded-2xl bg-gradient-to-br ${grad} p-6 text-white relative overflow-hidden select-none cursor-pointer shadow-sm">
                     <span class="inline-block px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-extrabold uppercase tracking-wider mb-3">
                         ${escapeHtml(tx.category)}
@@ -699,7 +695,6 @@ function renderInstagramFeed(list) {
                     </div>
                 </div>
 
-                <!-- Baris Aksi Instagram -->
                 <div class="flex items-center justify-between mt-3 mb-2">
                     <div class="flex items-center gap-2">
                         <button type="button" onclick="toggleAamiin('${txKey}')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors ${isLiked ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-slate-100 text-slate-700'}">
@@ -712,7 +707,6 @@ function renderInstagramFeed(list) {
                     <span class="text-[11px] font-semibold text-emerald-700">#InfaqmuPeduli</span>
                 </div>
 
-                <!-- Caption -->
                 <div class="text-xs text-slate-800 leading-relaxed">
                     <span class="font-bold mr-1">${escapeHtml(handle)}</span>
                     <span>${escapeHtml(tx.description)}</span>
@@ -775,11 +769,7 @@ async function toggleAamiin(txId) {
 function sharePostDetail(txId) {
     const tx = transactions.find(t => String(t.id) === String(txId));
     if (!tx) return;
-    const text = `*${appSettings.orgName}*
-_${tx.category} (${formatDateIndo(tx.tx_date)})_
-
-*${tx.title}*
-${tx.description}`;
+    const text = `*${appSettings.orgName}*\n_${tx.category} (${formatDateIndo(tx.tx_date)})_\n\n*${tx.title}*\n${tx.description}`;
     copyTextFallback(text, 'Berita berhasil disalin untuk dibagikan!');
 }
 
@@ -872,7 +862,7 @@ function renderStorySlide() {
     }
 }
 
-// --- REKAP WA & FORM INPUT BULANAN (KHUSUS ADMIN) ---
+// --- REKAP WA & FORM INPUT BULANAN ---
 function toggleWaFormEditMode(enableEdit) {
     if (currentRole !== 'admin') return;
     isWaFormEditable = enableEdit;
@@ -1065,7 +1055,6 @@ function updateWaExpenseField(idx, field, val) {
     else if (field === 'price') waFormState.expenses[idx].price = parseIndoNumber(val);
     else waFormState.expenses[idx][field] = val;
 
-    // Update subtotal langsung tanpa re-render input (mencegah keyboard HP tertutup)
     const item = waFormState.expenses[idx];
     const subEl = document.getElementById(`wa-exp-subtotal-${idx}`);
     if (subEl) {
@@ -1123,25 +1112,24 @@ function buildWaReportCalculationAndText() {
     const endingBalance = totalIncomeAll - totalExpenseAll;
 
     const waText = [
-        `Assalamu'alaikum warohmatullahi wabarokatuh`,
-        ``,
+        "Assalamu'alaikum warohmatullahi wabarokatuh",
+        "",
         `*LAPORAN INFAQMU BULAN ${monthName.toUpperCase()} ${yearStr}*`,
-        `======================================`,
-        `#Penerimaan :`,
+        "======================================",
+        "#Penerimaan :",
         ...incomeLines,
         `- ${waFormState.prevLabel} = ${formatIndoDots(prevAmt)},-`,
         `Total penerimaan = Rp. ${formatIndoDots(totalIncomeAll)},-`,
-        ``,
-        `#Pengeluaran :`,
+        "",
+        "#Pengeluaran :",
         `- ${waFormState.expenseGroupTitle} :`,
         ...expenseLines,
         `Total pengeluaran = Rp. ${formatIndoDots(totalExpenseAll)},- `,
-        ``,
+        "",
         `Saldo Infaqmu bulan ${monthName}= ${formatIndoDots(totalIncomeAll)} - ${formatIndoDots(totalExpenseAll)} = Rp. ${formatIndoDots(endingBalance)},-`,
-        ``,
-        `_Wassalamu'alaikum warohmatullahi wabarokatuh._ 🙏`
-    ].join('
-');
+        "",
+        "_Wassalamu'alaikum warohmatullahi wabarokatuh._ 🙏"
+    ].join('\n');
 
     return { monthName, yearStr, totalIncomeAll, prevAmt, totalExpenseAll, endingBalance, incomeLines, expenseLines, waText };
 }
@@ -1161,7 +1149,6 @@ async function saveAndPublishWaReport() {
     const txDateStr = `${waFormState.year}-${waFormState.month}-25`;
     const ymPrefix = `${waFormState.year}-${waFormState.month}`;
 
-    // Hapus catatan kas lama pada bulan yang sama agar tidak dobel
     transactions = transactions.filter(t => !(t.tx_date && t.tx_date.startsWith(ymPrefix) && (t.type === 'in' || t.type === 'out')));
 
     const newRows = [
@@ -1287,7 +1274,6 @@ function renderStatsView(year, month, periodLabel, ledger) {
         }).join('');
     }
 
-    // Breakdown Kategori Penyaluran
     const outMap = {};
     transactions.filter(t => t.type === 'out').forEach(t => {
         outMap[t.category] = (outMap[t.category] || 0) + (Number(t.amount) || 0);
@@ -1508,8 +1494,7 @@ function exportToCSV() {
     transactions.forEach(t => {
         rows.push([t.tx_date, t.type, `"${t.category}"`, `"${t.title}"`, t.amount || 0]);
     });
-    const blob = new Blob(['﻿' + rows.map(r => r.join(',')).join('
-')], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['\uFEFF' + rows.map(r => r.join(',')).join('\n')], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'Laporan_INFAQMU.csv';
